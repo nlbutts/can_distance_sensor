@@ -1,4 +1,4 @@
-24201090452213907
+24202822940086849
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -97719,6 +97719,13 @@ LED_5050
 0
 6
 6
+footprints
+LGA12_STM
+
+VL53L3CXV0DH/1 
+0
+12
+12
 footprints
 LGA16_I62_IVS
 

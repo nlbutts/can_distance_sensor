@@ -4762,6 +4762,10 @@
 		(uuid "28296e3c-5583-4d90-a85e-5220154b8aa9")
 	)
 	(no_connect
+		(at 134.62 110.49)
+		(uuid "306be90c-6184-4e3b-8156-c563d99bd7c0")
+	)
+	(no_connect
 		(at 134.62 105.41)
 		(uuid "3ee88a0b-0bb3-42ea-85f4-df489f4d94a0")
 	)
@@ -5453,16 +5457,6 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 110.49) (xy 134.62 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "55dee253-6abf-4004-a483-e55264b4537f")
-	)
-	(wire
-		(pts
 			(xy 106.68 175.26) (xy 95.25 175.26)
 		)
 		(stroke
@@ -5670,6 +5664,16 @@
 			(type default)
 		)
 		(uuid "6b7e6b5a-960e-4717-a399-79a74afd523e")
+	)
+	(wire
+		(pts
+			(xy 124.46 115.57) (xy 134.62 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6bcd1a6c-b930-4311-9d28-a02a7cd13899")
 	)
 	(wire
 		(pts
@@ -6060,16 +6064,6 @@
 			(type default)
 		)
 		(uuid "a1030138-c2d3-4657-b8c5-0533d8447fda")
-	)
-	(wire
-		(pts
-			(xy 124.46 115.57) (xy 134.62 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2616bb7-48d3-463d-9245-26c3b51239df")
 	)
 	(wire
 		(pts
@@ -6947,7 +6941,7 @@
 			)
 		)
 	)
-	(global_label "TOF_RST"
+	(global_label "TOF_XSHUT"
 		(shape input)
 		(at 246.38 128.27 180)
 		(fields_autoplaced yes)
@@ -6959,7 +6953,7 @@
 		)
 		(uuid "40631ece-3cf4-41af-843a-e8c69e32ef5c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 235.5934 128.27 0)
+			(at 232.9929 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7211,7 +7205,7 @@
 			)
 		)
 	)
-	(global_label "TOF_RST"
+	(global_label "TOF_XSHUT"
 		(shape input)
 		(at 124.46 115.57 180)
 		(fields_autoplaced yes)
@@ -7221,9 +7215,9 @@
 			)
 			(justify right)
 		)
-		(uuid "b22548d0-31e6-40ee-be6d-14a963097c0d")
+		(uuid "a865997e-f9e3-4443-9f8d-b12291e0d499")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 113.6734 115.57 0)
+			(at 111.0729 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7246,28 +7240,6 @@
 		(uuid "b388909a-1cf1-4c7a-8e3d-03715ac13b50")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 116.8182 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "TOF_LP"
-		(shape input)
-		(at 124.46 110.49 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "b7006429-393f-4b12-9a96-7e0b15b5ac05")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 114.8224 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
