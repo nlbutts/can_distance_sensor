@@ -1,0 +1,165 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "02469f38-8dce-42db-9cc0-6f91593a29cb")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 43.18 35.56)
+		(size 26.67 19.05)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "3d8ce9ec-ea5f-469a-8466-bdaa732c98d3")
+		(property "Sheetname" "STM32"
+			(at 43.18 34.8484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "stm32.kicad_sch"
+			(at 43.18 55.1946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 124.46 36.83)
+		(size 25.4 19.05)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "569f5f97-4363-4571-9a71-d6bccfdbb5ea")
+		(property "Sheetname" "CAN"
+			(at 124.46 36.1184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Can.kicad_sch"
+			(at 124.46 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 170.18 36.83)
+		(size 26.67 19.05)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "7832ef23-281d-4125-bbc2-fe91901c8bb4")
+		(property "Sheetname" "TOF"
+			(at 170.18 36.1184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "tof.kicad_sch"
+			(at 170.18 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 85.09 36.83)
+		(size 26.67 19.05)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "cfdc0141-1a33-4bb5-825d-9b87b62bf215")
+		(property "Sheetname" "Power"
+			(at 85.09 36.1184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Power.kicad_sch"
+			(at 85.09 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
