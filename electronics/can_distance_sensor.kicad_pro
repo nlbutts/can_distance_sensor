@@ -496,7 +496,7 @@
       "plot": "gerbers",
       "pos_files": "bom",
       "specctra_dsn": "",
-      "step": "can_distance_sensor.step",
+      "step": "../mechanical/can_distance_sensor.step",
       "svg": "",
       "vrml": ""
     },
