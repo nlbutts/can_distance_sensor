@@ -38,7 +38,12 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define WPILIB_DEVICE_TYPE 	10 << 24
+#define WPILIB_MFG_CODE 	20 << 16
+#define WPILIB_API_CLASS	5 << 10
+#define WPILIB_API_INDEX    0 << 6
+#define WPILIB_DEV_NUM		0
+#define WPILIB_CAN_ID WPILIB_DEVICE_TYPE | WPILIB_MFG_CODE | WPILIB_API_CLASS | WPILIB_API_INDEX | WPILIB_DEV_NUM
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -110,7 +115,7 @@ int main(void)
   HAL_FDCAN_Start(&hfdcan1);
   uint8_t txData[8];
   FDCAN_TxHeaderTypeDef txHeader;
-  txHeader.Identifier = 0x1234567;
+  txHeader.Identifier = WPILIB_CAN_ID;
   txHeader.IdType = FDCAN_EXTENDED_ID;
   txHeader.TxFrameType = FDCAN_DATA_FRAME;
   txHeader.DataLength = 8;
