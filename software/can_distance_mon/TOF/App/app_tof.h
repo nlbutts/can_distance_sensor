@@ -28,12 +28,12 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "custom_ranging_sensor.h"
-
 /* Exported defines ----------------------------------------------------------*/
 
 /* Exported functions --------------------------------------------------------*/
 void MX_TOF_Init(void);
-RANGING_SENSOR_Result_t MX_TOF_Process(void);
+void MX_TOF_Process(void);
+int MX_VL53L3CX_SimpleRanging_getMeasurement(RANGING_SENSOR_Result_t * result);
 
 #ifdef __cplusplus
 }

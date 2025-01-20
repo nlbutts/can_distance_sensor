@@ -34,7 +34,7 @@ extern "C" {
 
 /* Private define ------------------------------------------------------------*/
 #define TIMING_BUDGET (30U) /* 16 ms < TimingBudget < 500 ms */
-#define POLLING_PERIOD (100U) /* refresh rate for polling mode (ms, shall be consistent with TimingBudget value) */
+#define POLLING_PERIOD (250U) /* refresh rate for polling mode (ms, shall be consistent with TimingBudget value) */
 
 /* Private variables ---------------------------------------------------------*/
 static RANGING_SENSOR_Capabilities_t Cap;
@@ -85,39 +85,42 @@ void MX_TOF_Init(void)
 /*
  * LM background task
  */
-//void MX_TOF_Process(void)
-//{
-//  /* USER CODE BEGIN TOF_Process_PreTreatment */
-//
-//  /* USER CODE END TOF_Process_PreTreatment */
-//
-//  MX_VL53L3CX_SimpleRanging_Process();
-//
-//  /* USER CODE BEGIN TOF_Process_PostTreatment */
-//
-//  /* USER CODE END TOF_Process_PostTreatment */
-//}
-
-RANGING_SENSOR_Result_t MX_TOF_Process(void)
+void MX_TOF_Process(void)
 {
-	/* polling mode */
-	status = CUSTOM_RANGING_SENSOR_GetDistance(CUSTOM_VL53L3CX, &Result);
-	print_result(&Result);
-	return Result;
-}
+  /* USER CODE BEGIN TOF_Process_PreTreatment */
+  uint32_t Id;
+  /* USER CODE END TOF_Process_PreTreatment */
 
+  MX_VL53L3CX_SimpleRanging_Process();
+
+  /* USER CODE BEGIN TOF_Process_PostTreatment */
+  CUSTOM_RANGING_SENSOR_ReadID(CUSTOM_VL53L3CX, &Id);
+  CUSTOM_RANGING_SENSOR_GetCapabilities(CUSTOM_VL53L3CX, &Cap);
+
+  Profile.RangingProfile = RS_MULTI_TARGET_MEDIUM_RANGE;
+  Profile.TimingBudget = TIMING_BUDGET;
+  Profile.Frequency = 0; /* Induces intermeasurement period, set to ZERO for normal ranging */
+  Profile.EnableAmbient = 1; /* Enable: 1, Disable: 0 */
+  Profile.EnableSignal = 1; /* Enable: 1, Disable: 0 */
+
+  /* set the profile if different from default one */
+  CUSTOM_RANGING_SENSOR_ConfigProfile(CUSTOM_VL53L3CX, &Profile);
+
+  status = CUSTOM_RANGING_SENSOR_Start(CUSTOM_VL53L3CX, RS_MODE_BLOCKING_CONTINUOUS);
+  /* USER CODE END TOF_Process_PostTreatment */
+}
 
 static void MX_VL53L3CX_SimpleRanging_Init(void)
 {
   /* Initialize Virtual COM Port */
   //BSP_COM_Init(COM1);
 
-  printf("VL53L3CX Simple Ranging demo application\n\r");
+  printf("VL53L3CX Simple Ranging demo application\n");
   status = CUSTOM_RANGING_SENSOR_Init(CUSTOM_VL53L3CX);
 
   if (status != BSP_ERROR_NONE)
   {
-    printf("CUSTOM_RANGING_SENSOR_Init failed\n\r");
+    printf("CUSTOM_RANGING_SENSOR_Init failed\n");
     while (1);
   }
 }
@@ -132,8 +135,8 @@ static void MX_VL53L3CX_SimpleRanging_Process(void)
   Profile.RangingProfile = RS_MULTI_TARGET_MEDIUM_RANGE;
   Profile.TimingBudget = TIMING_BUDGET;
   Profile.Frequency = 0; /* Induces intermeasurement period, set to ZERO for normal ranging */
-  Profile.EnableAmbient = 0; /* Enable: 1, Disable: 0 */
-  Profile.EnableSignal = 0; /* Enable: 1, Disable: 0 */
+  Profile.EnableAmbient = 1; /* Enable: 1, Disable: 0 */
+  Profile.EnableSignal = 1; /* Enable: 1, Disable: 0 */
 
   /* set the profile if different from default one */
   CUSTOM_RANGING_SENSOR_ConfigProfile(CUSTOM_VL53L3CX, &Profile);
@@ -151,7 +154,6 @@ static void MX_VL53L3CX_SimpleRanging_Process(void)
     }
 
     HAL_Delay(POLLING_PERIOD);
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
   }
 }
 
@@ -162,11 +164,11 @@ static void print_result(RANGING_SENSOR_Result_t *Result)
 
   for (i = 0; i < RANGING_SENSOR_MAX_NB_ZONES; i++)
   {
-    printf("\n\rTargets = %lu", (unsigned long)Result->ZoneResult[i].NumberOfTargets);
+    printf("\nTargets = %lu", (unsigned long)Result->ZoneResult[i].NumberOfTargets);
 
     for (j = 0; j < Result->ZoneResult[i].NumberOfTargets; j++)
     {
-      printf("\n\r |---> ");
+      printf("\n |---> ");
 
       printf("Status = %ld, Distance = %5ld mm ",
              (long)Result->ZoneResult[i].Status[j],
@@ -183,13 +185,21 @@ static void print_result(RANGING_SENSOR_Result_t *Result)
                (long)decimal_part(Result->ZoneResult[i].Signal[j]));
     }
   }
-  printf("\n\r");
+  printf("\n");
 }
 
 static int32_t decimal_part(float_t x)
 {
   int32_t int_part = (int32_t) x;
   return (int32_t)((x - int_part) * 100);
+}
+
+
+int MX_VL53L3CX_SimpleRanging_getMeasurement(RANGING_SENSOR_Result_t * result)
+{
+  /* polling mode */
+  status = CUSTOM_RANGING_SENSOR_GetDistance(CUSTOM_VL53L3CX, result);
+  return status;
 }
 
 #ifdef __cplusplus

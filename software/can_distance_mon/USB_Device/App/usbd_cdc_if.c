@@ -94,7 +94,7 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+uint32_t RxIndex;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -155,6 +155,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+  RxIndex = 0;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -263,6 +264,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 6 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+  RxIndex = *Len;
   return (USBD_OK);
   /* USER CODE END 6 */
 }
@@ -316,6 +318,34 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
+uint32_t CDC_getRxBuffer(uint8_t * buf, uint32_t max_len)
+{
+	uint32_t localIndex = RxIndex;
+	RxIndex = 0;
+	uint32_t bytesToCopy = localIndex > max_len ? max_len : localIndex;
+	memcpy(buf, UserRxBufferFS, bytesToCopy);
+	if (bytesToCopy == 0)
+	{
+		buf[0] = 0;
+	}
+	return bytesToCopy;
+}
+
+char CDC_getChar()
+{
+	char temp = 0;
+	if (RxIndex > 0)
+	{
+		temp = UserRxBufferFS[0];
+		RxIndex--;
+		for (int i = 0; i < RxIndex; i++)
+		{
+			UserRxBufferFS[i] = UserRxBufferFS[i + 1];
+		}
+	}
+	return temp;
+}
+
 
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 

@@ -178,6 +178,19 @@
 
 void SystemInit(void)
 {
+  uint32_t * magic_number = (uint32_t*)0x10000000;
+  if (*magic_number == 0xDEADBEEF)
+  {
+	void (*bootloader)(void);  // Function pointer to the bootloader
+	uint32_t bootloaderAddress = 0x1FFF0000;  // System Memory start address (check for your MCU)
+
+	// Set Main Stack Pointer (MSP)
+	__set_MSP(*(volatile uint32_t *)bootloaderAddress);
+
+	// Jump to the bootloader reset handler
+	bootloader = (void (*)(void))(*(volatile uint32_t *)(bootloaderAddress + 4));
+	bootloader();
+  }
   /* FPU settings ------------------------------------------------------------*/
   #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
     SCB->CPACR |= ((3UL << (10*2))|(3UL << (11*2)));  /* set CP10 and CP11 Full Access */
