@@ -69,7 +69,7 @@ void MX_TOF_Init(void)
   CUSTOM_RANGING_SENSOR_ReadID(CUSTOM_VL53L3CX, &Id);
   CUSTOM_RANGING_SENSOR_GetCapabilities(CUSTOM_VL53L3CX, &Cap);
 
-  Profile.RangingProfile = RS_MULTI_TARGET_MEDIUM_RANGE;
+  Profile.RangingProfile = RS_MULTI_TARGET_SHORT_RANGE;
   Profile.TimingBudget = TIMING_BUDGET;
   Profile.Frequency = 0; /* Induces intermeasurement period, set to ZERO for normal ranging */
   Profile.EnableAmbient = 1; /* Enable: 1, Disable: 0 */
@@ -100,8 +100,8 @@ void MX_TOF_Process(void)
   Profile.RangingProfile = RS_MULTI_TARGET_MEDIUM_RANGE;
   Profile.TimingBudget = TIMING_BUDGET;
   Profile.Frequency = 0; /* Induces intermeasurement period, set to ZERO for normal ranging */
-  Profile.EnableAmbient = 1; /* Enable: 1, Disable: 0 */
-  Profile.EnableSignal = 1; /* Enable: 1, Disable: 0 */
+  Profile.EnableAmbient = 0; /* Enable: 1, Disable: 0 */
+  Profile.EnableSignal = 0; /* Enable: 1, Disable: 0 */
 
   /* set the profile if different from default one */
   CUSTOM_RANGING_SENSOR_ConfigProfile(CUSTOM_VL53L3CX, &Profile);

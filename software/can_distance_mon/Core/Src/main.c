@@ -35,7 +35,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define MAJOR_VER 1
+#define MINOR_VER 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -75,6 +76,11 @@ static void MX_FDCAN1_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
+#define MAX_INPUT_LENGTH    50
+#define MAX_OUTPUT_LENGTH   100
+#define WELCOME_LEN 200
+static char pcWelcomeMessage[WELCOME_LEN];
+
 uint8_t enableDebugPrint = 0;
 /* USER CODE END PFP */
 
@@ -104,8 +110,26 @@ static BaseType_t prvPrintDistance( char *pcWriteBuffer,
 static const CLI_Command_Definition_t xDebugCommand =
 {
     "debug",
-    "\r\ndebug:\r\nPrint distance measurements\r\n",
+    "\r\ndebug: Print distance measurements\r\n",
     prvPrintDistance,
+    0
+};
+
+static BaseType_t prvPrintSoftwareVer( char *pcWriteBuffer,
+                                  size_t xWriteBufferLen,
+                                  const char *pcCommandString )
+{
+
+  FreeRTOS_Print(pcWelcomeMessage);
+
+  return pdFALSE;
+}
+
+static const CLI_Command_Definition_t xVersionCommand =
+{
+    "ver",
+    "\r\nver: Print software version\r\n",
+    prvPrintSoftwareVer,
     0
 };
 
@@ -122,16 +146,10 @@ static BaseType_t prvJumpToDFU(char *pcWriteBuffer,
 static const CLI_Command_Definition_t xJumpDFU =
 {
   "dfu",
-  "\r\ndfu: \r\nJump to DFU programming\r\n",
+  "\r\ndfu: Jump to DFU programming\r\n",
   prvJumpToDFU,
   0
 };
-
-#define MAX_INPUT_LENGTH    50
-#define MAX_OUTPUT_LENGTH   100
-
-static const char * const pcWelcomeMessage =
-  "FreeRTOS command server.\r\nType Help to view a list of registered commands.\r\n";
 
 void vCommandConsoleTask( void *pvParameters )
 {
@@ -148,6 +166,7 @@ void vCommandConsoleTask( void *pvParameters )
 
    /* Send a welcome message to the user knows they are connected. */
   osDelay(1000);
+
   FreeRTOS_Print(pcWelcomeMessage);
 
   for( ;; )
@@ -295,6 +314,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  snprintf(pcWelcomeMessage, WELCOME_LEN,  "TOF DIstance Sensor V%d.%d.\r\nType Help to view a list of registered commands.\r\n", (int)MAJOR_VER, (int)MINOR_VER);
+
   cliTaskHandle = osThreadNew(vCommandConsoleTask, NULL, &defaultTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
@@ -302,6 +323,7 @@ int main(void)
   /* add events, ... */
   FreeRTOS_CLIRegisterCommand(&xDebugCommand);
   FreeRTOS_CLIRegisterCommand(&xJumpDFU);
+  FreeRTOS_CLIRegisterCommand(&xVersionCommand);
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
@@ -497,14 +519,25 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.DataTimeSeg1 = 1;
   hfdcan1.Init.DataTimeSeg2 = 1;
   hfdcan1.Init.StdFiltersNbr = 0;
-  hfdcan1.Init.ExtFiltersNbr = 0;
+  hfdcan1.Init.ExtFiltersNbr = 1;
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN FDCAN1_Init 2 */
+  // Configure a standard ID filter to accept all messages
+  FDCAN_FilterTypeDef filterConfig;
+  filterConfig.IdType = FDCAN_EXTENDED_ID;
+  filterConfig.FilterIndex = 0;
+  filterConfig.FilterType = FDCAN_FILTER_MASK;
+  filterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+  filterConfig.FilterID1 = 0x000;
+  filterConfig.FilterID2 = 0x000;
 
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &filterConfig) != HAL_OK) {
+      Error_Handler();
+  }
   /* USER CODE END FDCAN1_Init 2 */
 
 }
@@ -598,9 +631,14 @@ void StartDefaultTask(void *argument)
   txHeader.BitRateSwitch = FDCAN_BRS_OFF;
   txHeader.FDFormat = FDCAN_CLASSIC_CAN;
   txHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-  txHeader.MessageMarker = 1;
+  txHeader.MessageMarker = 0;
+
+  FDCAN_RxHeaderTypeDef rxHeader;
+  uint8_t rxData[8];
 
   RANGING_SENSOR_Result_t result;
+
+  FDCAN_ErrorCountersTypeDef errs;
 
   /* Infinite loop */
   for(;;)
@@ -617,9 +655,20 @@ void StartDefaultTask(void *argument)
       txData[4] = ((uint32_t)(result.ZoneResult[0].Ambient[0] * 1000)) & 0xFF;
       txData[5] = ((uint32_t)(result.ZoneResult[0].Signal[0] * 1000) >> 8) & 0xFF;
       txData[6] = ((uint32_t)(result.ZoneResult[0].Signal[0] * 1000)) & 0xFF;
+      txData[7] = MAJOR_VER << 4 | MINOR_VER;
       HAL_FDCAN_Start(&hfdcan1);
       osDelay(5);
       HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &txHeader, &txData);
+//      if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK)
+//      {
+//    	  FreeRTOS_Print("rx CAN\r\n");
+//      }
+
+//      if (HAL_FDCAN_GetErrorCounters(&hfdcan1, &errs) == HAL_OK)
+//	  {
+//    	  snprintf(tempbuf, 100, "TxCnt: %d RxCnt: %d Passive: %d log: %d\r\n", errs.TxErrorCnt, errs.RxErrorCnt, errs.RxErrorPassive, errs.ErrorLogging);
+//    	  FreeRTOS_Print(tempbuf);
+//	  }
 
       if (enableDebugPrint)
       {
