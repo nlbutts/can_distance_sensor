@@ -1,13 +1,17 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "02469f38-8dce-42db-9cc0-6f91593a29cb")
 	(paper "A4")
 	(lib_symbols)
 	(sheet
 		(at 43.18 35.56)
 		(size 26.67 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -46,6 +50,10 @@
 	(sheet
 		(at 124.46 36.83)
 		(size 25.4 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -82,8 +90,54 @@
 		)
 	)
 	(sheet
+		(at 209.55 36.83)
+		(size 26.67 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "59bb7ae2-db3f-482c-8aac-ebc5dce13aee")
+		(property "Sheetname" "Throughbore_encoder"
+			(at 209.55 36.1184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Throughbore_encoder.kicad_sch"
+			(at 209.55 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 170.18 36.83)
 		(size 26.67 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -122,6 +176,10 @@
 	(sheet
 		(at 85.09 36.83)
 		(size 26.67 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -162,4 +220,5 @@
 			(page "1")
 		)
 	)
+	(embedded_fonts no)
 )

@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include "app_tof.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -30,13 +29,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#include "custom_ranging_sensor.h"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define MAJOR_VER 1
-#define MINOR_VER 1
+#define MINOR_VER 2
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,12 +55,21 @@ CRC_HandleTypeDef hcrc;
 
 FDCAN_HandleTypeDef hfdcan1;
 
+SPI_HandleTypeDef hspi2;
+
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 256 * 4
+  .stack_size = 1500 * 4
+};
+/* Definitions for CLI */
+osThreadId_t CLIHandle;
+const osThreadAttr_t CLI_attributes = {
+  .name = "CLI",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 1024 * 4
 };
 /* USER CODE BEGIN PV */
 osThreadId_t cliTaskHandle;
@@ -73,7 +81,9 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_CRC_Init(void);
 static void MX_FDCAN1_Init(void);
+static void MX_SPI2_Init(void);
 void StartDefaultTask(void *argument);
+void vCommandConsoleTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 #define MAX_INPUT_LENGTH    50
@@ -151,7 +161,7 @@ static const CLI_Command_Definition_t xJumpDFU =
   0
 };
 
-void vCommandConsoleTask( void *pvParameters )
+void cliTask( void *pvParameters )
 {
   //Peripheral_Descriptor_t xConsole;
   int8_t cRxedChar, cInputIndex = 0;
@@ -280,7 +290,7 @@ int main(void)
   MX_ADC1_Init();
   MX_CRC_Init();
   MX_FDCAN1_Init();
-  MX_TOF_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   // Enable the CAN transceiver
   HAL_GPIO_WritePin(CAN_STB_GPIO_Port, CAN_STB_Pin, 0);
@@ -312,11 +322,13 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
+  /* creation of CLI */
+  CLIHandle = osThreadNew(vCommandConsoleTask, NULL, &CLI_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   snprintf(pcWelcomeMessage, WELCOME_LEN,  "TOF DIstance Sensor V%d.%d.\r\nType Help to view a list of registered commands.\r\n", (int)MAJOR_VER, (int)MINOR_VER);
 
-  cliTaskHandle = osThreadNew(vCommandConsoleTask, NULL, &defaultTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -324,6 +336,7 @@ int main(void)
   FreeRTOS_CLIRegisterCommand(&xDebugCommand);
   FreeRTOS_CLIRegisterCommand(&xJumpDFU);
   FreeRTOS_CLIRegisterCommand(&xVersionCommand);
+  MX_USB_Device_Init();
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
@@ -519,7 +532,7 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.DataTimeSeg1 = 1;
   hfdcan1.Init.DataTimeSeg2 = 1;
   hfdcan1.Init.StdFiltersNbr = 0;
-  hfdcan1.Init.ExtFiltersNbr = 1;
+  hfdcan1.Init.ExtFiltersNbr = 0;
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
   {
@@ -543,6 +556,46 @@ static void MX_FDCAN1_Init(void)
 }
 
 /**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_16BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_HARD_OUTPUT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 7;
+  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -550,11 +603,12 @@ static void MX_FDCAN1_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -600,12 +654,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(TOF_XSHUT_GPIO_Port, &GPIO_InitStruct);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
+static char tempbuf[100];
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -617,7 +671,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-  static char tempbuf[100];
   /* init code for USB_Device */
   MX_USB_Device_Init();
   /* USER CODE BEGIN 5 */
@@ -640,12 +693,23 @@ void StartDefaultTask(void *argument)
 
   FDCAN_ErrorCountersTypeDef errs;
 
+  CUSTOM_RANGING_SENSOR_Init(0);
+  RANGING_SENSOR_ProfileConfig_t profile =
+  {
+    .RangingProfile = VL53L3CX_PROFILE_SHORT,
+    .TimingBudget = 16,
+    .EnableAmbient = 0,
+    .EnableSignal = 0,
+  };
+  CUSTOM_RANGING_SENSOR_ConfigProfile(0, &profile);
+  CUSTOM_RANGING_SENSOR_Start(0, RS_MODE_BLOCKING_CONTINUOUS);
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(100);
+    osDelay(50);
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    if (MX_VL53L3CX_SimpleRanging_getMeasurement(&result) == BSP_ERROR_NONE)
+    if (CUSTOM_RANGING_SENSOR_GetDistance(0, &result) == BSP_ERROR_NONE)
     {
       // Format into a message
       txData[0] = result.ZoneResult[0].Status[0] & 0xFF;
@@ -683,6 +747,25 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
+/* USER CODE BEGIN Header_vCommandConsoleTask */
+/**
+* @brief Function implementing the CLI thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_vCommandConsoleTask */
+void vCommandConsoleTask(void *argument)
+{
+  /* USER CODE BEGIN vCommandConsoleTask */
+  cliTask(argument);
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END vCommandConsoleTask */
+}
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
@@ -696,7 +779,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM1)
+  {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
@@ -718,8 +802,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

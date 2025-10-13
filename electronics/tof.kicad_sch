@@ -1,12 +1,14 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "72fa3401-6095-4ff1-bf5e-1eab7b5f40fa")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Device:C"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
 				(offset 0.254)
 			)
@@ -79,7 +81,7 @@
 			(symbol "C_0_1"
 				(polyline
 					(pts
-						(xy -2.032 -0.762) (xy 2.032 -0.762)
+						(xy -2.032 0.762) (xy 2.032 0.762)
 					)
 					(stroke
 						(width 0.508)
@@ -91,7 +93,7 @@
 				)
 				(polyline
 					(pts
-						(xy -2.032 0.762) (xy 2.032 0.762)
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
 					)
 					(stroke
 						(width 0.508)
@@ -140,9 +142,12 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:R"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
 				(offset 0)
 			)
@@ -261,6 +266,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "General:TCA9509DGKR"
 			(pin_names
@@ -343,18 +349,6 @@
 			(symbol "TCA9509DGKR_0_1"
 				(polyline
 					(pts
-						(xy -22.86 -8.89) (xy 22.86 -8.89)
-					)
-					(stroke
-						(width 0.127)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
 						(xy -22.86 8.89) (xy -22.86 -8.89)
 					)
 					(stroke
@@ -367,7 +361,7 @@
 				)
 				(polyline
 					(pts
-						(xy 22.86 -8.89) (xy 22.86 8.89)
+						(xy -22.86 -8.89) (xy 22.86 -8.89)
 					)
 					(stroke
 						(width 0.127)
@@ -380,6 +374,18 @@
 				(polyline
 					(pts
 						(xy 22.86 8.89) (xy -22.86 8.89)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 22.86 -8.89) (xy 22.86 8.89)
 					)
 					(stroke
 						(width 0.127)
@@ -461,35 +467,17 @@
 						)
 					)
 				)
-				(pin input line
-					(at 30.48 -3.81 180)
+				(pin power_in line
+					(at 30.48 3.81 180)
 					(length 7.62)
-					(name "EN"
+					(name "VCCB"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 30.48 -1.27 180)
-					(length 7.62)
-					(name "SDAB"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -515,17 +503,35 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 30.48 3.81 180)
+				(pin bidirectional line
+					(at 30.48 -1.27 180)
 					(length 7.62)
-					(name "VCCB"
+					(name "SDAB"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "8"
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 30.48 -3.81 180)
+					(length 7.62)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -534,6 +540,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "General:VL53L3CXV0DH_1"
 			(pin_names
@@ -616,18 +623,6 @@
 			(symbol "VL53L3CXV0DH_1_0_1"
 				(polyline
 					(pts
-						(xy 7.62 -17.78) (xy 43.18 -17.78)
-					)
-					(stroke
-						(width 0.127)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
 						(xy 7.62 5.08) (xy 7.62 -17.78)
 					)
 					(stroke
@@ -640,7 +635,7 @@
 				)
 				(polyline
 					(pts
-						(xy 43.18 -17.78) (xy 43.18 5.08)
+						(xy 7.62 -17.78) (xy 43.18 -17.78)
 					)
 					(stroke
 						(width 0.127)
@@ -662,6 +657,18 @@
 						(type none)
 					)
 				)
+				(polyline
+					(pts
+						(xy 43.18 -17.78) (xy 43.18 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(pin power_in line
 					(at 0 0 0)
 					(length 7.62)
@@ -673,60 +680,6 @@
 						)
 					)
 					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 50.8 -5.08 180)
-					(length 7.62)
-					(name "SCL"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 50.8 -2.54 180)
-					(length 7.62)
-					(name "AVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 50.8 0 180)
-					(length 7.62)
-					(name "GND4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "12"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -824,17 +777,71 @@
 						)
 					)
 				)
-				(pin bidirectional line
-					(at 50.8 -12.7 180)
+				(pin power_in line
+					(at 50.8 0 180)
 					(length 7.62)
-					(name "GPIO1"
+					(name "GND4"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "7"
+					(number "12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 50.8 -2.54 180)
+					(length 7.62)
+					(name "AVDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 50.8 -5.08 180)
+					(length 7.62)
+					(name "SCL"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 50.8 -7.62 180)
+					(length 7.62)
+					(name "SDA"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "9"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -861,16 +868,16 @@
 					)
 				)
 				(pin bidirectional line
-					(at 50.8 -7.62 180)
+					(at 50.8 -12.7 180)
 					(length 7.62)
-					(name "SDA"
+					(name "GPIO1"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "9"
+					(number "7"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -879,12 +886,17 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "power:GND"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -975,6 +987,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 	)
 	(junction

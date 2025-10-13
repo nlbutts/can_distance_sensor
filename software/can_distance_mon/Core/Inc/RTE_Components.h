@@ -22,8 +22,7 @@
 #define  __RTE_COMPONENTS_H__
 
 /* Defines ------------------------------------------------------------------*/
-/* STMicroelectronics.X-CUBE-TOF1.3.4.2 */
-#define VL53L3CX_SIMPLE_RANGING
+/* STMicroelectronics.X-CUBE-TOF1.3.4.3 */
 #define VL53L3CX
 #define BSP_RANGING_SENSOR
 
