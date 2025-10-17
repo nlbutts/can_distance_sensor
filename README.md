@@ -72,3 +72,11 @@ In the scripts directory:
 ## Firmware upgrade
 There is no ability to upgrade the firmware right now. It will be fixed in future PCB rev.
 Currently you have to JTAG/SWD the firmware.
+
+# Potential other parts
+STM32G0:
+https://jlcpcb.com/partdetail/STMicroelectronics-STM32G0B1CBT6/C2847904
+Can we use a M0???
+
+
+
