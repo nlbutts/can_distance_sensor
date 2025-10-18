@@ -1732,7 +1732,7 @@
 	)
 	(text "Output is 5V"
 		(exclude_from_sim no)
-		(at 224.79 48.895 0)
+		(at 231.648 51.816 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1856,6 +1856,12 @@
 		(uuid "b8f66356-e35f-4c2a-9a0b-36917587a47c")
 	)
 	(junction
+		(at 222.25 54.61)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c24a2439-fef8-4f16-a56e-b3cfe124e570")
+	)
+	(junction
 		(at 123.19 137.16)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1894,6 +1900,16 @@
 			(type default)
 		)
 		(uuid "0421b44f-a895-47ff-b640-cfb2175e9c81")
+	)
+	(wire
+		(pts
+			(xy 222.25 54.61) (xy 228.6 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "05054ca2-75dd-49d0-b406-e33a9cf12e35")
 	)
 	(wire
 		(pts
@@ -1967,7 +1983,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 54.61) (xy 220.98 54.61)
+			(xy 217.17 54.61) (xy 222.25 54.61)
 		)
 		(stroke
 			(width 0)
@@ -2617,6 +2633,26 @@
 	)
 	(wire
 		(pts
+			(xy 219.71 105.41) (xy 219.71 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9924415-e506-43bf-b920-ab005e48092e")
+	)
+	(wire
+		(pts
+			(xy 135.89 105.41) (xy 135.89 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dab59f90-9ab1-4dc7-bb37-1cb472d20d8f")
+	)
+	(wire
+		(pts
 			(xy 187.96 64.77) (xy 187.96 63.5)
 		)
 		(stroke
@@ -2827,7 +2863,7 @@
 	)
 	(global_label "VCC"
 		(shape input)
-		(at 220.98 54.61 0)
+		(at 228.6 54.61 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2837,7 +2873,7 @@
 		)
 		(uuid "58d07e75-3430-4ab5-b978-2446510c4b35")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 227.5144 54.61 0)
+			(at 235.1344 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3153,6 +3189,73 @@
 			(project "can_distance_sensor"
 				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
 					(reference "C15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 135.89 105.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp yes)
+		(fields_autoplaced yes)
+		(uuid "365376d4-b570-4c01-b6f9-2d056a03a309")
+		(property "Reference" "TP3"
+			(at 138.43 100.8379 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 138.43 103.3779 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 140.97 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 135.89 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "720c2273-cd96-433a-a593-1d98cd2ef1a6")
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
+					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -3568,6 +3671,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 222.25 54.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp yes)
+		(fields_autoplaced yes)
+		(uuid "536ee4a2-3a6c-42ce-a20a-86df8780711d")
+		(property "Reference" "TP2"
+			(at 224.79 50.0379 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 224.79 52.5779 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 227.33 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 227.33 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 222.25 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "03487386-4cc0-4433-9b9a-27aabc26b238")
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
+					(reference "TP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 111.76 58.42 0)
 		(unit 1)
@@ -3662,79 +3832,6 @@
 			(project "FRCMotorTester"
 				(path "/8b7d42f7-da13-4f9b-ae64-d2ea00a4933f/e8491de4-daf1-4f92-903f-4d4365ccfebc"
 					(reference "C24")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 217.17 54.61 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "637c9544-dde7-457f-900c-df5119f6c218")
-		(property "Reference" "TP7"
-			(at 219.075 56.642 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 219.075 59.182 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 212.09 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 212.09 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 217.17 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "006742f5-9841-4f44-b99d-6b5030b87c68")
-		)
-		(instances
-			(project "FRCMotorTester"
-				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
-					(reference "TP7")
-					(unit 1)
-				)
-			)
-			(project "FRCMotorTester"
-				(path "/8b7d42f7-da13-4f9b-ae64-d2ea00a4933f/e8491de4-daf1-4f92-903f-4d4365ccfebc"
-					(reference "TP7")
 					(unit 1)
 				)
 			)
@@ -4097,6 +4194,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 219.71 105.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp yes)
+		(fields_autoplaced yes)
+		(uuid "7708af45-0651-44f4-963f-b73783f6584d")
+		(property "Reference" "TP4"
+			(at 222.25 100.8379 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 222.25 103.3779 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 224.79 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 224.79 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 219.71 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ecd0e882-2d41-4b1b-927e-8f805e14100b")
+		)
+		(instances
+			(project "can_distance_sensor"
+				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
+					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 207.01 119.38 0)
 		(unit 1)
@@ -4270,79 +4434,6 @@
 			(project "FRCMotorTester"
 				(path "/8b7d42f7-da13-4f9b-ae64-d2ea00a4933f/e8491de4-daf1-4f92-903f-4d4365ccfebc"
 					(reference "C28")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 135.89 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "7b9a23c5-7cd0-4dcc-af61-b2cc427cb86f")
-		(property "Reference" "TP6"
-			(at 137.795 104.648 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 137.795 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 140.97 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 140.97 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "3V3"
-			(at 135.89 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "522caf6e-6cb2-4c09-85e0-b03e99db6aa4")
-		)
-		(instances
-			(project "FRCMotorTester"
-				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-			(project "FRCMotorTester"
-				(path "/8b7d42f7-da13-4f9b-ae64-d2ea00a4933f/e8491de4-daf1-4f92-903f-4d4365ccfebc"
-					(reference "TP8")
 					(unit 1)
 				)
 			)
@@ -4529,73 +4620,6 @@
 			(project "FRCMotorTester"
 				(path "/8b7d42f7-da13-4f9b-ae64-d2ea00a4933f/e8491de4-daf1-4f92-903f-4d4365ccfebc"
 					(reference "C26")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 219.71 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "867a037e-a8ef-497f-8041-2e9f881d2ca8")
-		(property "Reference" "TP8"
-			(at 221.615 104.648 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 221.615 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 224.79 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 224.79 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "3V3"
-			(at 219.71 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5357076b-a415-4c69-b523-f113e356c9ca")
-		)
-		(instances
-			(project "can_distance_sensor"
-				(path "/02469f38-8dce-42db-9cc0-6f91593a29cb/cfdc0141-1a33-4bb5-825d-9b87b62bf215"
-					(reference "TP8")
 					(unit 1)
 				)
 			)

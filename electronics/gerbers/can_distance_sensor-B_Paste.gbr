@@ -1,12 +1,12 @@
-%TF.GenerationSoftware,KiCad,Pcbnew,8.0.6-8.0.6-0~ubuntu24.04.1*%
-%TF.CreationDate,2024-11-29T10:46:18-06:00*%
+%TF.GenerationSoftware,KiCad,Pcbnew,9.0.5-9.0.5~ubuntu24.04.1*%
+%TF.CreationDate,2025-10-18T12:27:34-05:00*%
 %TF.ProjectId,can_distance_sensor,63616e5f-6469-4737-9461-6e63655f7365,rev?*%
 %TF.SameCoordinates,Original*%
 %TF.FileFunction,Paste,Bot*%
 %TF.FilePolarity,Positive*%
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 8.0.6-8.0.6-0~ubuntu24.04.1) date 2024-11-29 10:46:18*
+G04 Created by KiCad (PCBNEW 9.0.5-9.0.5~ubuntu24.04.1) date 2025-10-18 12:27:34*
 %MOMM*%
 %LPD*%
 G01*
@@ -15,9 +15,9 @@ G04 APERTURE LIST*
 G04 APERTURE END LIST*
 D10*
 %TO.C,SW1*%
-X207683000Y-98334000D03*
-X199733000Y-98333999D03*
-X207683000Y-102834001D03*
-X199733000Y-102834001D03*
+X197963000Y-102790001D03*
+X205913000Y-102790001D03*
+X197963000Y-98289999D03*
+X205913000Y-98290000D03*
 %TD*%
 M02*
