@@ -1,0 +1,144 @@
+Configuration	can_distance_monitor
+STM32CubeMX 	6.15.0
+Date	10/18/2025
+MCU	STM32G0B1KBUx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN0	ADC1_IN0	PA0
+ADC1	IN1	ADC1_IN1	PA1
+ADC1	Single-ended	ADC1_TempSens_Input	VP_ADC1_TempSens_Input
+ADC1	Vrefint Channel	ADC1_Vref_Input	VP_ADC1_Vref_Input
+FDCAN1	Activated	FDCAN1_RX	PB8
+FDCAN1	Activated	FDCAN1_TX	PB9
+I2C2	I2C	I2C2_SCL	PA9
+I2C2	I2C	I2C2_SDA	PA6
+RCC	BYPASS Clock Source	RCC_OSC_IN	PC14-OSC32_IN (PC14)
+RCC	OSC enable	RCC_OSC_EN	PC15-OSC32_OUT (PC15)
+SPI1	Full-Duplex Master	SPI1_MISO	PB4
+SPI1	Full-Duplex Master	SPI1_MOSI	PB5
+SPI1	Full-Duplex Master	SPI1_SCK	PB3
+SPI1	Hardware NSS Output Signal	SPI1_NSS	PA15
+SYS	Serial Wire	SYS_SWCLK	PA14-BOOT0
+SYS	Serial Wire	SYS_SWDIO	PA13
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+TIM3	Internal Clock	TIM3_VS_ClockSourceINT	VP_TIM3_VS_ClockSourceINT
+TIM4	Input Capture direct mode	TIM4_CH1	PB6
+TIM4	Input Capture direct mode	TIM4_CH2	PB7
+USART6	Asynchronous	USART6_RX	PA5
+USART6	Asynchronous	USART6_TX	PA4
+USB_DRD_FS	Device_Only_FS	USB_DM	PA11 [PA9]
+USB_DRD_FS	Device_Only_FS	USB_DP	PA12 [PA10]
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+1	PB9	FDCAN1_TX	
+2	PC14-OSC32_IN (PC14)	RCC_OSC_IN	
+3	PC15-OSC32_OUT (PC15)	RCC_OSC_EN	
+7	PA0	ADC1_IN0	
+8	PA1	ADC1_IN1	
+10	PA3	GPIO_Output	CAN_STB
+11	PA4	USART6_TX	
+12	PA5	USART6_RX	
+13	PA6	I2C2_SDA	
+15	PB0	GPIO_Input	TOF_INT
+16	PB1	GPIO_Output	TOF_XSHUT
+17	PB2	GPIO_Output	LED1
+18	PA8	GPIO_Output	LED2
+19	PA9	I2C2_SCL	
+22	PA11 [PA9]	USB_DM	
+23	PA12 [PA10]	USB_DP	
+24	PA13	SYS_SWDIO	
+25	PA14-BOOT0	SYS_SWCLK	
+26	PA15	SPI1_NSS	
+27	PB3	SPI1_SCK	
+28	PB4	SPI1_MISO	
+29	PB5	SPI1_MOSI	
+30	PB6	TIM4_CH1	
+31	PB7	TIM4_CH2	
+32	PB8	FDCAN1_RX	
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN0	ADC1_IN0	PA0
+ADC1	IN1	ADC1_IN1	PA1
+ADC1	Single-ended	ADC1_TempSens_Input	VP_ADC1_TempSens_Input
+ADC1	Vrefint Channel	ADC1_Vref_Input	VP_ADC1_Vref_Input
+FDCAN1	Activated	FDCAN1_RX	PB8
+FDCAN1	Activated	FDCAN1_TX	PB9
+I2C2	I2C	I2C2_SCL	PA9
+I2C2	I2C	I2C2_SDA	PA6
+RCC	BYPASS Clock Source	RCC_OSC_IN	PC14-OSC32_IN (PC14)
+RCC	OSC enable	RCC_OSC_EN	PC15-OSC32_OUT (PC15)
+SPI1	Full-Duplex Master	SPI1_MISO	PB4
+SPI1	Full-Duplex Master	SPI1_MOSI	PB5
+SPI1	Full-Duplex Master	SPI1_SCK	PB3
+SPI1	Hardware NSS Output Signal	SPI1_NSS	PA15
+SYS	Serial Wire	SYS_SWCLK	PA14-BOOT0
+SYS	Serial Wire	SYS_SWDIO	PA13
+SYS	TIM1	SYS_VS_tim1	VP_SYS_VS_tim1
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+TIM3	Internal Clock	TIM3_VS_ClockSourceINT	VP_TIM3_VS_ClockSourceINT
+TIM4	Input Capture direct mode	TIM4_CH1	PB6
+TIM4	Input Capture direct mode	TIM4_CH2	PB7
+USART6	Asynchronous	USART6_RX	PA5
+USART6	Asynchronous	USART6_TX	PA4
+USB_DRD_FS	Device_Only_FS	USB_DM	PA11 [PA9]
+USB_DRD_FS	Device_Only_FS	USB_DP	PA12 [PA10]
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+1	PB9	FDCAN1_TX	
+2	PC14-OSC32_IN (PC14)	RCC_OSC_IN	
+3	PC15-OSC32_OUT (PC15)	RCC_OSC_EN	
+7	PA0	ADC1_IN0	
+8	PA1	ADC1_IN1	
+10	PA3	GPIO_Output	CAN_STB
+11	PA4	USART6_TX	
+12	PA5	USART6_RX	
+13	PA6	I2C2_SDA	
+15	PB0	GPIO_Input	TOF_INT
+16	PB1	GPIO_Output	TOF_XSHUT
+17	PB2	GPIO_Output	LED1
+18	PA8	GPIO_Output	LED2
+19	PA9	I2C2_SCL	
+22	PA11 [PA9]	USB_DM	
+23	PA12 [PA10]	USB_DP	
+24	PA13	SYS_SWDIO	
+25	PA14-BOOT0	SYS_SWCLK	
+26	PA15	SPI1_NSS	
+27	PB3	SPI1_SCK	
+28	PB4	SPI1_MISO	
+29	PB5	SPI1_MOSI	
+30	PB6	TIM4_CH1	
+31	PB7	TIM4_CH2	
+32	PB8	FDCAN1_RX	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : can_distance_monitor
+Project Folder : /home/nlbutts/projects/frc/can_distance_sensor/software/can_distance_monitor
+Toolchain / IDE : STM32CubeIDE
+Firmware Package Name and Version : STM32Cube FW_G0 V1.6.2
+
+
+Code Generation Settings : 
+STM32Cube MCU packages and embedded software packs : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
