@@ -990,6 +990,16 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "I2C ADDR: 0x26 (0x52 on the wire)"
+		(exclude_from_sim no)
+		(at 128.27 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "1aefabeb-4a7e-40a1-b515-3e43ece6faee")
+	)
 	(junction
 		(at 190.5 67.31)
 		(diameter 0)

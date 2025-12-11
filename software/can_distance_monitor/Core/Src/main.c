@@ -46,6 +46,8 @@ ADC_HandleTypeDef hadc1;
 
 FDCAN_HandleTypeDef hfdcan1;
 
+I2C_HandleTypeDef hi2c2;
+
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim3;
@@ -73,10 +75,17 @@ static void MX_SPI1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_I2C2_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-
+static void uart_send_hex(uint8_t val)
+{
+  char hex[2];
+  hex[0] = "0123456789ABCDEF"[val >> 4];
+  hex[1] = "0123456789ABCDEF"[val & 0x0F];
+  CDC_Transmit_FS((uint8_t*)hex, 2);
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -119,6 +128,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART6_UART_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -186,11 +196,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_HSI48;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
   RCC_OscInitStruct.PLL.PLLN = 8;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
@@ -314,6 +326,54 @@ static void MX_FDCAN1_Init(void)
   /* USER CODE BEGIN FDCAN1_Init 2 */
 
   /* USER CODE END FDCAN1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x10B17DB5;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
 
 }
 
@@ -571,6 +631,25 @@ void StartDefaultTask(void *argument)
   /* init code for USB_Device */
   MX_USB_Device_Init();
   /* USER CODE BEGIN 5 */
+  HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, 1);
+  /* Scan for I2C devices on hi2c2 and report via UART6 */
+  uint8_t addr = 0x52 >> 1;
+  /* Helper to send two hexadecimal digits */
+  /* Function defined below the includes to avoid nested function definition */
+  while (1)
+  {
+	if(HAL_I2C_IsDeviceReady(&hi2c2, (uint16_t)(addr << 1), 1, 100) == HAL_OK)
+	{
+		const char *prefix = "I2C device found at 0x";
+		CDC_Transmit_FS((uint8_t*)prefix, 22);
+		uart_send_hex(addr);
+		const char *crlf = "\r\n";
+		CDC_Transmit_FS((uint8_t*)crlf, 2);
+		HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+	}
+    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+    osDelay(100);
+  }
   /* Infinite loop */
   for(;;)
   {
@@ -581,7 +660,7 @@ void StartDefaultTask(void *argument)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
+  * @note   This function is called  when TIM6 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -592,7 +671,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1)
+  if (htim->Instance == TIM6)
   {
     HAL_IncTick();
   }

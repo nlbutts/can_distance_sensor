@@ -20,8 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "custom_bus.h"
 
-__weak HAL_StatusTypeDef MX_I2C2_Init(I2C_HandleTypeDef* hi2c);
-
 /** @addtogroup BSP
   * @{
   */
@@ -38,10 +36,10 @@ __weak HAL_StatusTypeDef MX_I2C2_Init(I2C_HandleTypeDef* hi2c);
   * @{
   */
 
-I2C_HandleTypeDef hi2c2;
+/* Use the I2C2 instance from main.c */
+extern I2C_HandleTypeDef hi2c2;
 /**
   * @}
-  */
 
 /** @defgroup CUSTOM_BUS_Private_Variables BUS Private Variables
   * @{
@@ -93,42 +91,25 @@ int32_t BSP_I2C2_Init(void)
 
   int32_t ret = BSP_ERROR_NONE;
 
-  hi2c2.Instance  = I2C2;
-
+  /* Since hi2c2 is initialized in main.c, we just increment the counter to track usage */
   if(I2C2InitCounter++ == 0)
   {
+    /* Check if I2C2 is already initialized */
     if (HAL_I2C_GetState(&hi2c2) == HAL_I2C_STATE_RESET)
     {
-    #if (USE_HAL_I2C_REGISTER_CALLBACKS == 0U)
-      /* Init the I2C Msp */
-      I2C2_MspInit(&hi2c2);
-    #else
-      if(IsI2C2MspCbValid == 0U)
-      {
-        if(BSP_I2C2_RegisterDefaultMspCallbacks() != BSP_ERROR_NONE)
-        {
-          return BSP_ERROR_MSP_FAILURE;
-        }
-      }
-    #endif
-      if(ret == BSP_ERROR_NONE)
-      {
-        /* Init the I2C */
-        if(MX_I2C2_Init(&hi2c2) != HAL_OK)
-        {
-          ret = BSP_ERROR_BUS_FAILURE;
-        }
-        else if(HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-        {
-          ret = BSP_ERROR_BUS_FAILURE;
-        }
-        else
-        {
-          ret = BSP_ERROR_NONE;
-        }
-      }
+      ret = BSP_ERROR_BUS_FAILURE;
+    }
+    else
+    {
+      ret = BSP_ERROR_NONE;
     }
   }
+  else
+  {
+    /* Already initialized, just return success */
+    ret = BSP_ERROR_NONE;
+  }
+  
   return ret;
 }
 

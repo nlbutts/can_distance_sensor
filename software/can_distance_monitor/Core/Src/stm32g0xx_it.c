@@ -55,7 +55,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TIM_HandleTypeDef htim1;
+extern PCD_HandleTypeDef hpcd_USB_DRD_FS;
+extern TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN EV */
 
@@ -102,17 +103,31 @@ void HardFault_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles TIM1 break, update, trigger and commutation interrupts.
+  * @brief This function handles USB, UCPD1 and UCPD2 global interrupts.
   */
-void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
+void USB_UCPD1_2_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM1_BRK_UP_TRG_COM_IRQn 0 */
+  /* USER CODE BEGIN USB_UCPD1_2_IRQn 0 */
 
-  /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
-  /* USER CODE BEGIN TIM1_BRK_UP_TRG_COM_IRQn 1 */
+  /* USER CODE END USB_UCPD1_2_IRQn 0 */
+  HAL_PCD_IRQHandler(&hpcd_USB_DRD_FS);
+  /* USER CODE BEGIN USB_UCPD1_2_IRQn 1 */
 
-  /* USER CODE END TIM1_BRK_UP_TRG_COM_IRQn 1 */
+  /* USER CODE END USB_UCPD1_2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM6, DAC and LPTIM1 global Interrupts.
+  */
+void TIM6_DAC_LPTIM1_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_LPTIM1_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_LPTIM1_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_LPTIM1_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_LPTIM1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
