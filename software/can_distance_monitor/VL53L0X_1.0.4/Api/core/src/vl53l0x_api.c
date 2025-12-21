@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright © 2016, STMicroelectronics International N.V.
+ * Copyright ï¿½ 2016, STMicroelectronics International N.V.
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -393,6 +393,7 @@ VL53L0X_Error VL53L0X_DataInit(VL53L0X_DEV Dev)
 	/* by default the I2C is running at 1V8 if you want to change it you
 	 * need to include this define at compilation level.
 	 */
+#define USE_I2C_2V8
 #ifdef USE_I2C_2V8
 	Status = VL53L0X_UpdateByte(Dev,
 		VL53L0X_REG_VHV_CONFIG_PAD_SCL_SDA__EXTSUP_HV,

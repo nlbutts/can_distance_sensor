@@ -63,7 +63,7 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
+  .stack_size = 4096 * 4
 };
 /* USER CODE BEGIN PV */
 
@@ -82,13 +82,13 @@ static void MX_I2C2_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-static void uart_send_hex(uint8_t val)
-{
-  char hex[2];
-  hex[0] = "0123456789ABCDEF"[val >> 4];
-  hex[1] = "0123456789ABCDEF"[val & 0x0F];
-  CDC_Transmit_FS((uint8_t*)hex, 2);
-}
+// static void uart_send_hex(uint8_t val)
+// {
+//   char hex[2];
+//   hex[0] = "0123456789ABCDEF"[val >> 4];
+//   hex[1] = "0123456789ABCDEF"[val & 0x0F];
+//   CDC_Transmit_FS((uint8_t*)hex, 2);
+// }
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -583,7 +583,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED1_Pin|CAN_STB_Pin|LED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PC15 */
   GPIO_InitStruct.Pin = GPIO_PIN_15;
@@ -608,7 +608,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : TOF_XSHUT_Pin */
   GPIO_InitStruct.Pin = TOF_XSHUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(TOF_XSHUT_GPIO_Port, &GPIO_InitStruct);
@@ -634,29 +634,46 @@ void StartDefaultTask(void *argument)
   /* init code for USB_Device */
   MX_USB_Device_Init();
   /* USER CODE BEGIN 5 */
-  HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, 1);
-  
-  /* Initialize VL53L0X sensor */
-  VL53L0X_Dev_t VL53L0X_Device;
-  VL53L0X_Device.I2cDevAddr = 0x52;  // VL53L0X I2C address
-  VL53L0X_Device.comms_type = 0;
-  VL53L0X_Device.comms_speed_khz = 400;
-  
-  /* Initialize the VL53L0X API */
-  VL53L0X_Error status = VL53L0X_ERROR_NONE;
-  status = VL53L0X_DataInit(&VL53L0X_Device);
-  if (status != VL53L0X_ERROR_NONE) {
-    const char *error_msg = "VL53L0X DataInit failed\r\n";
-    CDC_Transmit_FS((uint8_t*)error_msg, 24);
-  }
-  else {
-    /* Set the device to single ranging mode */
-    status = VL53L0X_SetDeviceMode(&VL53L0X_Device, VL53L0X_DEVICEMODE_SINGLE_RANGING);
-    if (status != VL53L0X_ERROR_NONE) {
-      const char *error_msg = "VL53L0X SetDeviceMode failed\r\n";
-      CDC_Transmit_FS((uint8_t*)error_msg, 31);
+    char buffer[100];
+    HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, 1);
+
+#if 0
+    uint16_t addr = 0x29 << 1;
+    while (1)
+    {
+        if(HAL_I2C_IsDeviceReady(&hi2c2, addr, 1, 100) == HAL_OK)
+        {
+            const char *prefix = "I2C device found at 0x";
+            char buffer[100];
+            snprintf(buffer, sizeof(buffer), "%s%02X\r\n", prefix, addr);
+            CDC_Transmit_FS((uint8_t*)buffer, strlen(buffer));
+            HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+        }
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        osDelay(100);
     }
-  }
+#else
+    /* Initialize VL53L0X sensor */
+    VL53L0X_Dev_t VL53L0X_Device;
+    VL53L0X_Device.I2cDevAddr = 0x29;  // VL53L0X I2C address
+    VL53L0X_Device.comms_type = 0;
+    VL53L0X_Device.comms_speed_khz = 400;
+
+    /* Initialize the VL53L0X API */
+    VL53L0X_Error status = VL53L0X_ERROR_NONE;
+    status = VL53L0X_DataInit(&VL53L0X_Device);
+    if (status != VL53L0X_ERROR_NONE) {
+        const char *error_msg = "VL53L0X DataInit failed\r\n";
+        CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
+    }
+    else {
+        /* Set the device to single ranging mode */
+        status = VL53L0X_SetDeviceMode(&VL53L0X_Device, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
+        if (status != VL53L0X_ERROR_NONE) {
+            const char *error_msg = "VL53L0X SetDeviceMode failed\r\n";
+            CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
+        }
+    }
   
   /* Main loop for reading distance measurements */
   while (1)
@@ -665,13 +682,12 @@ void StartDefaultTask(void *argument)
     status = VL53L0X_PerformSingleRangingMeasurement(&VL53L0X_Device, &ranging_data);
     if (status == VL53L0X_ERROR_NONE) {
       /* Convert distance to string and send via CDC */
-      char buffer[20];
       int len = sprintf(buffer, "Distance: %d mm\r\n", ranging_data.RangeMilliMeter);
       CDC_Transmit_FS((uint8_t*)buffer, len);
     }
     else {
       const char *error_msg = "VL53L0X measurement failed\r\n";
-      CDC_Transmit_FS((uint8_t*)error_msg, 27);
+      CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
     }
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     osDelay(500);  // Read every 500ms
@@ -681,6 +697,7 @@ void StartDefaultTask(void *argument)
   {
     osDelay(1);
   }
+#endif  
   /* USER CODE END 5 */
 }
 
