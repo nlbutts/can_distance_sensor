@@ -23,7 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <usbd_cdc_if.h>
+#include "vl53l0x_api.h"
+#include "vl53l0x_platform.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -632,23 +635,46 @@ void StartDefaultTask(void *argument)
   MX_USB_Device_Init();
   /* USER CODE BEGIN 5 */
   HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, 1);
-  /* Scan for I2C devices on hi2c2 and report via UART6 */
-  uint8_t addr = 0x52 >> 1;
-  /* Helper to send two hexadecimal digits */
-  /* Function defined below the includes to avoid nested function definition */
+  
+  /* Initialize VL53L0X sensor */
+  VL53L0X_Dev_t VL53L0X_Device;
+  VL53L0X_Device.I2cDevAddr = 0x52;  // VL53L0X I2C address
+  VL53L0X_Device.comms_type = 0;
+  VL53L0X_Device.comms_speed_khz = 400;
+  
+  /* Initialize the VL53L0X API */
+  VL53L0X_Error status = VL53L0X_ERROR_NONE;
+  status = VL53L0X_DataInit(&VL53L0X_Device);
+  if (status != VL53L0X_ERROR_NONE) {
+    const char *error_msg = "VL53L0X DataInit failed\r\n";
+    CDC_Transmit_FS((uint8_t*)error_msg, 24);
+  }
+  else {
+    /* Set the device to single ranging mode */
+    status = VL53L0X_SetDeviceMode(&VL53L0X_Device, VL53L0X_DEVICEMODE_SINGLE_RANGING);
+    if (status != VL53L0X_ERROR_NONE) {
+      const char *error_msg = "VL53L0X SetDeviceMode failed\r\n";
+      CDC_Transmit_FS((uint8_t*)error_msg, 31);
+    }
+  }
+  
+  /* Main loop for reading distance measurements */
   while (1)
   {
-	if(HAL_I2C_IsDeviceReady(&hi2c2, (uint16_t)(addr << 1), 1, 100) == HAL_OK)
-	{
-		const char *prefix = "I2C device found at 0x";
-		CDC_Transmit_FS((uint8_t*)prefix, 22);
-		uart_send_hex(addr);
-		const char *crlf = "\r\n";
-		CDC_Transmit_FS((uint8_t*)crlf, 2);
-		HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-	}
+    VL53L0X_RangingMeasurementData_t ranging_data;
+    status = VL53L0X_PerformSingleRangingMeasurement(&VL53L0X_Device, &ranging_data);
+    if (status == VL53L0X_ERROR_NONE) {
+      /* Convert distance to string and send via CDC */
+      char buffer[20];
+      int len = sprintf(buffer, "Distance: %d mm\r\n", ranging_data.RangeMilliMeter);
+      CDC_Transmit_FS((uint8_t*)buffer, len);
+    }
+    else {
+      const char *error_msg = "VL53L0X measurement failed\r\n";
+      CDC_Transmit_FS((uint8_t*)error_msg, 27);
+    }
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    osDelay(100);
+    osDelay(500);  // Read every 500ms
   }
   /* Infinite loop */
   for(;;)

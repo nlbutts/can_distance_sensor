@@ -74,6 +74,11 @@ void HAL_MspInit(void)
   /* PendSV_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(PendSV_IRQn, 3, 0);
 
+  /* Peripheral interrupt init */
+  /* RCC_CRS_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(RCC_CRS_IRQn, 3, 0);
+  HAL_NVIC_EnableIRQ(RCC_CRS_IRQn);
+
   /** Disable the internal Pull-Up in Dead Battery pins of UCPD peripheral
   */
   HAL_SYSCFG_StrobeDBattpinsConfig(SYSCFG_CFGR1_UCPD1_STROBE);
@@ -109,6 +114,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* ADC1 interrupt Init */
+    HAL_NVIC_SetPriority(ADC1_COMP_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(ADC1_COMP_IRQn);
     /* USER CODE BEGIN ADC1_MspInit 1 */
 
     /* USER CODE END ADC1_MspInit 1 */
@@ -138,6 +146,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
 
+    /* ADC1 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(ADC1_COMP_IRQn);
     /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
     /* USER CODE END ADC1_MspDeInit 1 */
@@ -186,6 +196,11 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* hfdcan)
     GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* FDCAN1 interrupt Init */
+    HAL_NVIC_SetPriority(TIM16_FDCAN_IT0_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(TIM16_FDCAN_IT0_IRQn);
+    HAL_NVIC_SetPriority(TIM17_FDCAN_IT1_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(TIM17_FDCAN_IT1_IRQn);
     /* USER CODE BEGIN FDCAN1_MspInit 1 */
 
     /* USER CODE END FDCAN1_MspInit 1 */
@@ -216,6 +231,9 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* hfdcan)
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_9|GPIO_PIN_8);
 
+    /* FDCAN1 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(TIM16_FDCAN_IT0_IRQn);
+    HAL_NVIC_DisableIRQ(TIM17_FDCAN_IT1_IRQn);
     /* USER CODE BEGIN FDCAN1_MspDeInit 1 */
 
     /* USER CODE END FDCAN1_MspDeInit 1 */
@@ -262,6 +280,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
 
     /* Peripheral clock enable */
     __HAL_RCC_I2C2_CLK_ENABLE();
+    /* I2C2 interrupt Init */
+    HAL_NVIC_SetPriority(I2C2_3_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(I2C2_3_IRQn);
     /* USER CODE BEGIN I2C2_MspInit 1 */
 
     /* USER CODE END I2C2_MspInit 1 */
@@ -294,6 +315,8 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
 
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9);
 
+    /* I2C2 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(I2C2_3_IRQn);
     /* USER CODE BEGIN I2C2_MspDeInit 1 */
 
     /* USER CODE END I2C2_MspDeInit 1 */
@@ -340,6 +363,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     GPIO_InitStruct.Alternate = GPIO_AF0_SPI1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* SPI1 interrupt Init */
+    HAL_NVIC_SetPriority(SPI1_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(SPI1_IRQn);
     /* USER CODE BEGIN SPI1_MspInit 1 */
 
     /* USER CODE END SPI1_MspInit 1 */
@@ -374,6 +400,8 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5);
 
+    /* SPI1 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(SPI1_IRQn);
     /* USER CODE BEGIN SPI1_MspDeInit 1 */
 
     /* USER CODE END SPI1_MspDeInit 1 */
@@ -409,6 +437,9 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+    /* TIM3 interrupt Init */
+    HAL_NVIC_SetPriority(TIM3_TIM4_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(TIM3_TIM4_IRQn);
     /* USER CODE BEGIN TIM3_MspInit 1 */
 
     /* USER CODE END TIM3_MspInit 1 */
@@ -445,6 +476,9 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef* htim_ic)
     GPIO_InitStruct.Alternate = GPIO_AF9_TIM4;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* TIM4 interrupt Init */
+    HAL_NVIC_SetPriority(TIM3_TIM4_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(TIM3_TIM4_IRQn);
     /* USER CODE BEGIN TIM4_MspInit 1 */
 
     /* USER CODE END TIM4_MspInit 1 */
@@ -474,6 +508,15 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
     */
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6);
 
+    /* TIM3 interrupt DeInit */
+    /* USER CODE BEGIN TIM3:TIM3_TIM4_IRQn disable */
+    /**
+    * Uncomment the line below to disable the "TIM3_TIM4_IRQn" interrupt
+    * Be aware, disabling shared interrupt may affect other IPs
+    */
+    /* HAL_NVIC_DisableIRQ(TIM3_TIM4_IRQn); */
+    /* USER CODE END TIM3:TIM3_TIM4_IRQn disable */
+
     /* USER CODE BEGIN TIM3_MspDeInit 1 */
 
     /* USER CODE END TIM3_MspDeInit 1 */
@@ -501,6 +544,15 @@ void HAL_TIM_IC_MspDeInit(TIM_HandleTypeDef* htim_ic)
     PB6     ------> TIM4_CH1
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
+
+    /* TIM4 interrupt DeInit */
+    /* USER CODE BEGIN TIM4:TIM3_TIM4_IRQn disable */
+    /**
+    * Uncomment the line below to disable the "TIM3_TIM4_IRQn" interrupt
+    * Be aware, disabling shared interrupt may affect other IPs
+    */
+    /* HAL_NVIC_DisableIRQ(TIM3_TIM4_IRQn); */
+    /* USER CODE END TIM4:TIM3_TIM4_IRQn disable */
 
     /* USER CODE BEGIN TIM4_MspDeInit 1 */
 
@@ -538,6 +590,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Alternate = GPIO_AF3_USART6;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART6 interrupt Init */
+    HAL_NVIC_SetPriority(USART3_4_5_6_LPUART1_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(USART3_4_5_6_LPUART1_IRQn);
     /* USER CODE BEGIN USART6_MspInit 1 */
 
     /* USER CODE END USART6_MspInit 1 */
@@ -568,6 +623,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5);
 
+    /* USART6 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(USART3_4_5_6_LPUART1_IRQn);
     /* USER CODE BEGIN USART6_MspDeInit 1 */
 
     /* USER CODE END USART6_MspDeInit 1 */

@@ -56,6 +56,13 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_DRD_FS;
+extern ADC_HandleTypeDef hadc1;
+extern FDCAN_HandleTypeDef hfdcan1;
+extern I2C_HandleTypeDef hi2c2;
+extern SPI_HandleTypeDef hspi1;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim4;
+extern UART_HandleTypeDef huart6;
 extern TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN EV */
@@ -103,6 +110,19 @@ void HardFault_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles RCC global Interrupt.
+  */
+void RCC_IRQHandler(void)
+{
+  /* USER CODE BEGIN RCC_IRQn 0 */
+
+  /* USER CODE END RCC_IRQn 0 */
+  /* USER CODE BEGIN RCC_IRQn 1 */
+
+  /* USER CODE END RCC_IRQn 1 */
+}
+
+/**
   * @brief This function handles USB, UCPD1 and UCPD2 global interrupts.
   */
 void USB_UCPD1_2_IRQHandler(void)
@@ -117,6 +137,35 @@ void USB_UCPD1_2_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles ADC1, COMP1,COMP2, COMP3 Interrupts (combined with EXTI 17 & 18).
+  */
+void ADC1_COMP_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_COMP_IRQn 0 */
+
+  /* USER CODE END ADC1_COMP_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_COMP_IRQn 1 */
+
+  /* USER CODE END ADC1_COMP_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM3, TIM4 global Interrupt.
+  */
+void TIM3_TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_TIM4_IRQn 0 */
+
+  /* USER CODE END TIM3_TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM3_TIM4_IRQn 1 */
+
+  /* USER CODE END TIM3_TIM4_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM6, DAC and LPTIM1 global Interrupts.
   */
 void TIM6_DAC_LPTIM1_IRQHandler(void)
@@ -128,6 +177,83 @@ void TIM6_DAC_LPTIM1_IRQHandler(void)
   /* USER CODE BEGIN TIM6_DAC_LPTIM1_IRQn 1 */
 
   /* USER CODE END TIM6_DAC_LPTIM1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM16, FDCAN1_IT0 and FDCAN2_IT0 Interrupt.
+  */
+void TIM16_FDCAN_IT0_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM16_FDCAN_IT0_IRQn 0 */
+
+  /* USER CODE END TIM16_FDCAN_IT0_IRQn 0 */
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+  /* USER CODE BEGIN TIM16_FDCAN_IT0_IRQn 1 */
+
+  /* USER CODE END TIM16_FDCAN_IT0_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM17, FDCAN1_IT1 and FDCAN2_IT1 Interrupt.
+  */
+void TIM17_FDCAN_IT1_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM17_FDCAN_IT1_IRQn 0 */
+
+  /* USER CODE END TIM17_FDCAN_IT1_IRQn 0 */
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+  /* USER CODE BEGIN TIM17_FDCAN_IT1_IRQn 1 */
+
+  /* USER CODE END TIM17_FDCAN_IT1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles I2C2, I2C3 Interrupt (combined with EXTI 24 and EXTI 22).
+  */
+void I2C2_3_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C2_3_IRQn 0 */
+
+  /* USER CODE END I2C2_3_IRQn 0 */
+  if (hi2c2.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR))
+  {
+    HAL_I2C_ER_IRQHandler(&hi2c2);
+  }
+  else
+  {
+    HAL_I2C_EV_IRQHandler(&hi2c2);
+  }
+  /* USER CODE BEGIN I2C2_3_IRQn 1 */
+
+  /* USER CODE END I2C2_3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles SPI1/I2S1 Interrupt.
+  */
+void SPI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN SPI1_IRQn 0 */
+
+  /* USER CODE END SPI1_IRQn 0 */
+  HAL_SPI_IRQHandler(&hspi1);
+  /* USER CODE BEGIN SPI1_IRQn 1 */
+
+  /* USER CODE END SPI1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART3, USART4, USART5, USART6, LPUART1 globlal Interrupts (combined with EXTI 28).
+  */
+void USART3_4_5_6_LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_4_5_6_LPUART1_IRQn 0 */
+
+  /* USER CODE END USART3_4_5_6_LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart6);
+  /* USER CODE BEGIN USART3_4_5_6_LPUART1_IRQn 1 */
+
+  /* USER CODE END USART3_4_5_6_LPUART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

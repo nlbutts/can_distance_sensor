@@ -4313,6 +4313,26 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Remove this R/C"
+		(exclude_from_sim no)
+		(at 69.85 155.448 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "5143aa57-46f5-4ffc-8f9a-8be9bbeac16b")
+	)
+	(text "Go back to a micro B\nDisconnect USB power."
+		(exclude_from_sim no)
+		(at 59.182 62.484 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "c51166a8-a5e9-4749-a36c-e39fdc1bd1c4")
+	)
 	(junction
 		(at 264.16 30.48)
 		(diameter 0)

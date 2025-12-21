@@ -91,6 +91,7 @@ extern I2C_HandleTypeDef hi2c2;
 
 /**
   * @}
+  */
 
 /** @addtogroup CUSTOM_BUS_Exported_Functions
   * @{

@@ -1344,6 +1344,26 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "D"
+		(exclude_from_sim no)
+		(at 83.058 35.052 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "47eec30d-cbe6-4a9b-896f-b7b86d1ab908")
+	)
+	(text "G"
+		(exclude_from_sim no)
+		(at 75.692 37.338 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "55271eef-d836-416f-a7d7-a914fb66eec8")
+	)
 	(text "Output is 5V"
 		(exclude_from_sim no)
 		(at 230.378 49.276 0)
@@ -1354,6 +1374,26 @@
 			(justify left bottom)
 		)
 		(uuid "72d18412-0c10-4a29-b12d-0dd8dc81ea15")
+	)
+	(text "Replace this with a diode or move D5 over here."
+		(exclude_from_sim no)
+		(at 81.534 21.336 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "b33c7853-9dbc-49f0-ae7d-2678d0b75656")
+	)
+	(text "S"
+		(exclude_from_sim no)
+		(at 83.566 46.228 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "c44854e4-c8c5-4bb1-bd50-2dec84f3b86e")
 	)
 	(junction
 		(at 171.45 109.22)
