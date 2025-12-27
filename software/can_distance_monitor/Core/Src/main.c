@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "stm32g0xx_hal_fdcan.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -51,10 +52,7 @@ FDCAN_HandleTypeDef hfdcan1;
 
 I2C_HandleTypeDef hi2c2;
 
-SPI_HandleTypeDef hspi1;
-
 TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart6;
 
@@ -74,9 +72,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_FDCAN1_Init(void);
-static void MX_SPI1_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_TIM4_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_I2C2_Init(void);
 void StartDefaultTask(void *argument);
@@ -127,9 +123,7 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_FDCAN1_Init();
-  MX_SPI1_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
   MX_USART6_UART_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
@@ -381,46 +375,6 @@ static void MX_I2C2_Init(void)
 }
 
 /**
-  * @brief SPI1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI1_Init(void)
-{
-
-  /* USER CODE BEGIN SPI1_Init 0 */
-
-  /* USER CODE END SPI1_Init 0 */
-
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 7;
-  hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI1_Init 2 */
-
-  /* USER CODE END SPI1_Init 2 */
-
-}
-
-/**
   * @brief TIM3 Initialization Function
   * @param None
   * @retval None
@@ -440,7 +394,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 63;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -475,54 +429,6 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
-
-}
-
-/**
-  * @brief TIM4 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM4_Init(void)
-{
-
-  /* USER CODE BEGIN TIM4_Init 0 */
-
-  /* USER CODE END TIM4_Init 0 */
-
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_IC_InitTypeDef sConfigIC = {0};
-
-  /* USER CODE BEGIN TIM4_Init 1 */
-
-  /* USER CODE END TIM4_Init 1 */
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_IC_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM4_Init 2 */
-
-  /* USER CODE END TIM4_Init 2 */
 
 }
 
@@ -619,6 +525,60 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void txstring(char * str, int len)
+{
+    CDC_Transmit_FS((uint8_t*)str, len);
+}
+
+void print_pal_error(char * prefix, VL53L0X_Error Status){
+    char buf[VL53L0X_MAX_STRING_LENGTH];
+    char bigbuf[VL53L0X_MAX_STRING_LENGTH + 100];
+    VL53L0X_GetPalErrorString(Status, buf);
+    int len = snprintf((char *)bigbuf, sizeof(bigbuf), "%s: API Status: %i : %s\n", prefix, Status, buf);
+    txstring((char *)bigbuf, len);
+}
+
+void print_range_status(VL53L0X_RangingMeasurementData_t* pRangingMeasurementData){
+    char buf[VL53L0X_MAX_STRING_LENGTH];
+    char bigbuf[VL53L0X_MAX_STRING_LENGTH + 100];
+    uint8_t RangeStatus;
+
+    /*
+     * New Range Status: data is valid when pRangingMeasurementData->RangeStatus = 0
+     */
+
+    RangeStatus = pRangingMeasurementData->RangeStatus;
+
+    VL53L0X_GetRangeStatusString(RangeStatus, buf);
+    int len = snprintf((char *)bigbuf, sizeof(bigbuf), "Range Status: %i : %s\n", RangeStatus, buf);
+    txstring((char *)bigbuf, len);
+}
+
+VL53L0X_Error WaitMeasurementDataReady(VL53L0X_DEV Dev) {
+    VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+    uint8_t NewDatReady=0;
+    uint32_t LoopNb;
+
+    // Wait until it finished
+    // use timeout to avoid deadlock
+    if (Status == VL53L0X_ERROR_NONE) {
+        LoopNb = 0;
+        do {
+            Status = VL53L0X_GetMeasurementDataReady(Dev, &NewDatReady);
+            if ((NewDatReady == 0x01) || Status != VL53L0X_ERROR_NONE) {
+                break;
+            }
+            LoopNb = LoopNb + 1;
+            VL53L0X_PollingDelay(Dev);
+        } while (LoopNb < VL53L0X_DEFAULT_MAX_LOOP);
+
+        if (LoopNb >= VL53L0X_DEFAULT_MAX_LOOP) {
+            Status = VL53L0X_ERROR_TIME_OUT;
+        }
+    }
+
+    return Status;
+}
 
 /* USER CODE END 4 */
 
@@ -634,70 +594,180 @@ void StartDefaultTask(void *argument)
   /* init code for USB_Device */
   MX_USB_Device_Init();
   /* USER CODE BEGIN 5 */
-    char buffer[100];
+    char buffer[512];
     HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, 1);
+    HAL_GPIO_WritePin(CAN_STB_GPIO_Port, CAN_STB_Pin, 0);
+    osDelay(1000);
 
+    /* Start TIM3 and input-capture on CH1 and CH2 for frequency measurement */
+    HAL_TIM_Base_Start(&htim3);
+    HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1);
+    HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2);
+    uint16_t last_cap1 = 0;
+    uint16_t last_cap2 = 0;
+
+    VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+    VL53L0X_RangingMeasurementData_t    RangingMeasurementData;
+    FixPoint1616_t LimitCheckCurrent;
+    uint32_t refSpadCount;
+    uint8_t isApertureSpads;
+    uint8_t VhvSettings;
+    uint8_t PhaseCal;
 #if 0
-    uint16_t addr = 0x29 << 1;
-    while (1)
-    {
-        if(HAL_I2C_IsDeviceReady(&hi2c2, addr, 1, 100) == HAL_OK)
-        {
-            const char *prefix = "I2C device found at 0x";
-            char buffer[100];
-            snprintf(buffer, sizeof(buffer), "%s%02X\r\n", prefix, addr);
-            CDC_Transmit_FS((uint8_t*)buffer, strlen(buffer));
-            HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-        }
-        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-        osDelay(100);
-    }
-#else
-    /* Initialize VL53L0X sensor */
+   /* Initialize VL53L0X sensor */
     VL53L0X_Dev_t VL53L0X_Device;
-    VL53L0X_Device.I2cDevAddr = 0x29;  // VL53L0X I2C address
+    txstring("Hello, World!\n", 15);
+    /* Transmit a CAN message on FDCAN1 */
+    FDCAN_TxHeaderTypeDef TxHeader;
+    uint8_t TxData[8] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+    uint32_t TxMailbox;
+    TxHeader.Identifier = 0x123;          /* Standard ID */
+    TxHeader.IdType = FDCAN_STANDARD_ID;
+    TxHeader.TxFrameType = FDCAN_DATA_FRAME;
+    TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+    TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+    TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
+    TxHeader.FDFormat = FDCAN_FD_CAN;
+    TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+    TxHeader.MessageMarker = 0;
+    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+    {
+      /* Transmission request Error */
+      Error_Handler();
+    }
     VL53L0X_Device.comms_type = 0;
     VL53L0X_Device.comms_speed_khz = 400;
 
-    /* Initialize the VL53L0X API */
-    VL53L0X_Error status = VL53L0X_ERROR_NONE;
-    status = VL53L0X_DataInit(&VL53L0X_Device);
-    if (status != VL53L0X_ERROR_NONE) {
-        const char *error_msg = "VL53L0X DataInit failed\r\n";
-        CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+        Status = VL53L0X_StaticInit(&VL53L0X_Device); // Device Initialization
+        print_pal_error("VL53L0X_StaticInit", Status);
     }
-    else {
-        /* Set the device to single ranging mode */
-        status = VL53L0X_SetDeviceMode(&VL53L0X_Device, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
-        if (status != VL53L0X_ERROR_NONE) {
-            const char *error_msg = "VL53L0X SetDeviceMode failed\r\n";
-            CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
+
+    osDelay(100);
+    VL53L0X_SetRangeFractionEnable(&VL53L0X_Device, 0); // Device Initialization
+    
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+        Status = VL53L0X_PerformRefCalibration(&VL53L0X_Device,
+        		&VhvSettings, &PhaseCal); // Device Initialization
+        print_pal_error("VL53L0X_PerformRefCalibration", Status);
+    }
+
+    osDelay(100);
+
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+        Status = VL53L0X_PerformRefSpadManagement(&VL53L0X_Device,
+        		&refSpadCount, &isApertureSpads); // Device Initialization
+        //printf ("refSpadCount = %ld, isApertureSpads = %d\n", refSpadCount, isApertureSpads);
+        print_pal_error("VL53L0X_PerformRefSpadManagement", Status);
+    }
+
+    osDelay(100);
+
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+
+        // no need to do this when we use VL53L0X_PerformSingleRangingMeasurement
+        Status = VL53L0X_SetDeviceMode(&VL53L0X_Device, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING); // Setup in single ranging mode
+        print_pal_error("VL53L0X_SetDeviceMode", Status);
+    }
+
+    // if (Status == VL53L0X_ERROR_NONE) {
+    //     Status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(&VL53L0X_Device, 30000);
+    // }	
+    osDelay(100);
+
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+        Status = VL53L0X_StartMeasurement(&VL53L0X_Device);
+        print_pal_error("VL53L0X_StartMeasurement", Status);
+    }
+
+    /*
+     *  Step  4 : Test ranging mode
+     */
+
+    if(Status == VL53L0X_ERROR_NONE)
+    {
+        while (1)
+        {
+            Status = WaitMeasurementDataReady(&VL53L0X_Device);
+            if(Status == VL53L0X_ERROR_NONE)
+            {
+                Status = VL53L0X_GetRangingMeasurementData(&VL53L0X_Device,
+                        &RangingMeasurementData);
+            }
+            // VL53L0X_GetLimitCheckCurrent(&VL53L0X_Device,
+            // 		VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, &LimitCheckCurrent);
+            // osDelay(100);
+
+            int len;
+            // int len = snprintf(buffer, sizeof(buffer), "RANGE IGNORE THRESHOLD: %f\n\n", (float)LimitCheckCurrent/65536.0);
+            // txstring(buffer, len);
+            // osDelay(100);
+
+            if (Status != VL53L0X_ERROR_NONE) break;
+            len = snprintf(buffer, sizeof(buffer), "RangeMilliMeter: %d mm / MaxRangeMilliMeter: %d mm / RangeStatus: %d / SignalRate: %d kcps / AmbientRate: %d kcps\r\n",
+                     (int)RangingMeasurementData.RangeMilliMeter,
+                     (int)RangingMeasurementData.RangeDMaxMilliMeter,
+                     (int)RangingMeasurementData.RangeStatus,
+                     (int)RangingMeasurementData.SignalRateRtnMegaCps,
+                     (int)RangingMeasurementData.AmbientRateRtnMegaCps);
+            //txstring(buffer, len);
+
+            osDelay(100);
         }
     }
-  
-  /* Main loop for reading distance measurements */
-  while (1)
-  {
-    VL53L0X_RangingMeasurementData_t ranging_data;
-    status = VL53L0X_PerformSingleRangingMeasurement(&VL53L0X_Device, &ranging_data);
-    if (status == VL53L0X_ERROR_NONE) {
-      /* Convert distance to string and send via CDC */
-      int len = sprintf(buffer, "Distance: %d mm\r\n", ranging_data.RangeMilliMeter);
-      CDC_Transmit_FS((uint8_t*)buffer, len);
-    }
-    else {
-      const char *error_msg = "VL53L0X measurement failed\r\n";
-      CDC_Transmit_FS((uint8_t*)error_msg, strlen(error_msg));
-    }
-    HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-    osDelay(500);  // Read every 500ms
-  }
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-#endif  
+#endif
+    HAL_FDCAN_Start(&hfdcan1);
+
+    while (1)
+    {
+        osDelay(1000);
+        HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+        /* Transmit a CAN message on FDCAN1 */
+        FDCAN_TxHeaderTypeDef TxHeader;
+        uint8_t TxData[8] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+        TxHeader.Identifier = 0x123;               /* Standard ID */
+        TxHeader.IdType = FDCAN_EXTENDED_ID;
+        TxHeader.TxFrameType = FDCAN_DATA_FRAME;
+        TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+        TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+        TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
+        TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
+        TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+        TxHeader.MessageMarker = 0;
+        if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData) != HAL_OK)
+        {
+          /* Transmission request Error */
+          const char *error_message = "Error: CAN message transmission failed\r\n";
+          txstring(error_message, strlen(error_message));
+        }
+        else
+        {
+          const char *success_message = "CAN message transmitted successfully\r\n";
+          txstring(success_message, strlen(success_message));
+        }
+        
+        /* Check for error passive mode and reset if needed */
+        FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+        if (HAL_FDCAN_GetProtocolStatus(&hfdcan1, &ProtocolStatus) == HAL_OK)
+        {
+          if (ProtocolStatus.ErrorPassive)
+          {
+            osDelay(100);
+            const char *error_message = "CAN in Error Passive mode - resetting...\r\n";
+            txstring(error_message, strlen(error_message));
+            HAL_FDCAN_Stop(&hfdcan1);
+            osDelay(100);
+            HAL_FDCAN_Start(&hfdcan1);
+            const char *reset_message = "CAN reset complete\r\n";
+            txstring(reset_message, strlen(reset_message));
+          }
+        }
+      }
   /* USER CODE END 5 */
 }
 

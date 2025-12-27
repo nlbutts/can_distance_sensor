@@ -59,9 +59,7 @@ extern PCD_HandleTypeDef hpcd_USB_DRD_FS;
 extern ADC_HandleTypeDef hadc1;
 extern FDCAN_HandleTypeDef hfdcan1;
 extern I2C_HandleTypeDef hi2c2;
-extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim3;
-extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart6;
 extern TIM_HandleTypeDef htim6;
 
@@ -159,7 +157,6 @@ void TIM3_TIM4_IRQHandler(void)
 
   /* USER CODE END TIM3_TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
-  HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM3_TIM4_IRQn 1 */
 
   /* USER CODE END TIM3_TIM4_IRQn 1 */
@@ -226,20 +223,6 @@ void I2C2_3_IRQHandler(void)
   /* USER CODE BEGIN I2C2_3_IRQn 1 */
 
   /* USER CODE END I2C2_3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles SPI1/I2S1 Interrupt.
-  */
-void SPI1_IRQHandler(void)
-{
-  /* USER CODE BEGIN SPI1_IRQn 0 */
-
-  /* USER CODE END SPI1_IRQn 0 */
-  HAL_SPI_IRQHandler(&hspi1);
-  /* USER CODE BEGIN SPI1_IRQn 1 */
-
-  /* USER CODE END SPI1_IRQn 1 */
 }
 
 /**
