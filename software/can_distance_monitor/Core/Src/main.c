@@ -525,7 +525,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void txstring(char * str, int len)
+void txstring(const char * str, int len)
 {
     CDC_Transmit_FS((uint8_t*)str, len);
 }
@@ -603,6 +603,7 @@ void StartDefaultTask(void *argument)
     HAL_TIM_Base_Start(&htim3);
     HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1);
     HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2);
+#if 0
     uint16_t last_cap1 = 0;
     uint16_t last_cap2 = 0;
 
@@ -613,7 +614,6 @@ void StartDefaultTask(void *argument)
     uint8_t isApertureSpads;
     uint8_t VhvSettings;
     uint8_t PhaseCal;
-#if 0
    /* Initialize VL53L0X sensor */
     VL53L0X_Dev_t VL53L0X_Device;
     txstring("Hello, World!\n", 15);
@@ -721,52 +721,15 @@ void StartDefaultTask(void *argument)
         }
     }
 #endif
-    HAL_FDCAN_Start(&hfdcan1);
-
+    CDC_EnableBuffering();
     while (1)
     {
-        osDelay(1000);
+        osDelay(10);
         HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-        /* Transmit a CAN message on FDCAN1 */
-        FDCAN_TxHeaderTypeDef TxHeader;
-        uint8_t TxData[8] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-        TxHeader.Identifier = 0x123;               /* Standard ID */
-        TxHeader.IdType = FDCAN_EXTENDED_ID;
-        TxHeader.TxFrameType = FDCAN_DATA_FRAME;
-        TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-        TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-        TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
-        TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
-        TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-        TxHeader.MessageMarker = 0;
-        if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData) != HAL_OK)
-        {
-          /* Transmission request Error */
-          const char *error_message = "Error: CAN message transmission failed\r\n";
-          txstring(error_message, strlen(error_message));
-        }
-        else
-        {
-          const char *success_message = "CAN message transmitted successfully\r\n";
-          txstring(success_message, strlen(success_message));
-        }
-        
-        /* Check for error passive mode and reset if needed */
-        FDCAN_ProtocolStatusTypeDef ProtocolStatus;
-        if (HAL_FDCAN_GetProtocolStatus(&hfdcan1, &ProtocolStatus) == HAL_OK)
-        {
-          if (ProtocolStatus.ErrorPassive)
-          {
-            osDelay(100);
-            const char *error_message = "CAN in Error Passive mode - resetting...\r\n";
-            txstring(error_message, strlen(error_message));
-            HAL_FDCAN_Stop(&hfdcan1);
-            osDelay(100);
-            HAL_FDCAN_Start(&hfdcan1);
-            const char *reset_message = "CAN reset complete\r\n";
-            txstring(reset_message, strlen(reset_message));
-          }
-        }
+        snprintf(buffer, sizeof(buffer), "Heartbeat %ld\n", HAL_GetTick());
+        txstring(buffer, strlen(buffer));
+        const char * msg = "The quick brown fox jumps over the lazy dog.\n";
+        txstring(msg, strlen(msg));
       }
   /* USER CODE END 5 */
 }

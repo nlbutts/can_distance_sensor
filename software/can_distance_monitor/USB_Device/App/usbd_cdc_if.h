@@ -52,7 +52,8 @@
 #define APP_RX_DATA_SIZE  2048
 #define APP_TX_DATA_SIZE  2048
 /* USER CODE BEGIN EXPORTED_DEFINES */
-
+#define CDC_BUFFER_SIZE 2048
+#define CDC_MAX_BUFFERED_PACKETS 4
 /* USER CODE END EXPORTED_DEFINES */
 
 /**
@@ -63,6 +64,12 @@
   * @brief Types.
   * @{
   */
+
+/* Buffer structure for queued data */
+typedef struct {
+  uint8_t data[CDC_BUFFER_SIZE];
+  uint16_t length;
+} CDC_Buffer_t;
 
 /* USER CODE BEGIN EXPORTED_TYPES */
 
@@ -94,6 +101,7 @@
 extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
+extern uint8_t CDC_BufferingEnabled;
 
 /* USER CODE END EXPORTED_VARIABLES */
 
@@ -107,6 +115,8 @@ extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
   */
 
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+void CDC_EnableBuffering(void);
+void CDC_DisableBuffering(void);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 

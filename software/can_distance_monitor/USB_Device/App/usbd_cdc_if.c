@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
+#include <string.h>
 
 /* USER CODE BEGIN INCLUDE */
 
@@ -31,6 +32,10 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
+/* Double buffering variables */
+CDC_Buffer_t CDC_BufferQueue;
+uint8_t CDC_BufferingEnabled = 1;  /* Enable buffering by default */
 
 /* USER CODE END PV */
 
@@ -128,6 +133,8 @@ static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len);
 static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
+static uint8_t CDC_QueuePacket(uint8_t* Buf, uint16_t Len);
+static void CDC_ProcessQueuedPackets(void);
 
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
@@ -283,11 +290,26 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
   uint8_t result = USBD_OK;
   /* USER CODE BEGIN 7 */
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
-  if (hcdc->TxState != 0){
-    return USBD_BUSY;
+  
+  /* If the interface is not busy, send directly */
+  if (hcdc->TxState == 0)
+  {
+    USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
+    result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
   }
-  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
-  result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+  else
+  {
+    /* If the interface is busy and buffering is enabled, queue the packet */
+    if (CDC_BufferingEnabled)
+    {
+      result = CDC_QueuePacket(Buf, Len);
+    }
+    else
+    {
+      /* If buffering is disabled, return busy immediately */
+      result = USBD_BUSY;
+    }
+  }
   /* USER CODE END 7 */
   return result;
 }
@@ -311,8 +333,71 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(Buf);
   UNUSED(Len);
   UNUSED(epnum);
+  
+  /* Process queued packets when transmission is complete */
+  if (CDC_BufferQueue.length > 0)
+  {   
+    /* Process the next packet in queue */
+    CDC_ProcessQueuedPackets();
+  }
   /* USER CODE END 13 */
   return result;
+}
+
+/**
+  * @brief  Queue a packet for transmission when the CDC interface is busy
+  * @param  Buf: Buffer of data to be queued
+  * @param  Len: Number of data to be queued (in bytes)
+  * @retval USBD_OK if all operations are OK else USBD_FAIL or USBD_BUSY
+  */
+static uint8_t CDC_QueuePacket(uint8_t* Buf, uint16_t Len)
+{
+  uint8_t result = USBD_OK;
+
+  if ((CDC_BufferQueue.length + Len) >= CDC_BUFFER_SIZE)
+  {
+    result = USBD_BUSY; /* Not enough space in buffer */
+    return result;
+  }
+
+  // There is room for this string, copy it in
+  memcpy(CDC_BufferQueue.data + CDC_BufferQueue.length, Buf, Len);
+  CDC_BufferQueue.length += Len;
+  
+  return result;
+}
+
+/**
+  * @brief  Process queued packets when the CDC interface becomes free
+  */
+static void CDC_ProcessQueuedPackets(void)
+{
+  USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
+  
+  /* Check if we can send the next packet in queue */
+  if (hcdc->TxState == 0)
+  {
+    /* Send the queued packet */
+    USBD_CDC_SetTxBuffer(&hUsbDeviceFS, CDC_BufferQueue.data, CDC_BufferQueue.length);
+    USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+    CDC_BufferQueue.length = 0; /* Clear the queue after sending */
+  }
+}
+
+/**
+  * @brief  Enable buffering for CDC transmission
+  */
+void CDC_EnableBuffering(void)
+{
+  CDC_BufferingEnabled = 1;
+}
+
+/**
+  * @brief  Disable buffering for CDC transmission
+  */
+void CDC_DisableBuffering(void)
+{
+  CDC_BufferingEnabled = 0;
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
