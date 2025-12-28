@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include "stm32g0xx_hal_fdcan.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -42,6 +41,12 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+#define WPILIB_DEVICE_TYPE 	10 << 24
+#define WPILIB_MFG_CODE 	20 << 16
+#define WPILIB_API_CLASS	5 << 10
+#define WPILIB_API_INDEX    0 << 6
+#define WPILIB_DEV_NUM		0
+#define WPILIB_CAN_ID WPILIB_DEVICE_TYPE | WPILIB_MFG_CODE | WPILIB_API_CLASS | WPILIB_API_INDEX | WPILIB_DEV_NUM
 
 /* USER CODE END PM */
 
@@ -78,13 +83,6 @@ static void MX_I2C2_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-// static void uart_send_hex(uint8_t val)
-// {
-//   char hex[2];
-//   hex[0] = "0123456789ABCDEF"[val >> 4];
-//   hex[1] = "0123456789ABCDEF"[val & 0x0F];
-//   CDC_Transmit_FS((uint8_t*)hex, 2);
-// }
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -603,10 +601,10 @@ void StartDefaultTask(void *argument)
     HAL_TIM_Base_Start(&htim3);
     HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_1);
     HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2);
-#if 0
-    uint16_t last_cap1 = 0;
-    uint16_t last_cap2 = 0;
 
+    CDC_EnableBuffering();
+
+#if 1
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     VL53L0X_RangingMeasurementData_t    RangingMeasurementData;
     FixPoint1616_t LimitCheckCurrent;
@@ -630,13 +628,17 @@ void StartDefaultTask(void *argument)
     TxHeader.FDFormat = FDCAN_FD_CAN;
     TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
     TxHeader.MessageMarker = 0;
-    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
-    {
-      /* Transmission request Error */
-      Error_Handler();
-    }
+    // if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData) != HAL_OK)
+    // {
+    //   /* Transmission request Error */
+    //   Error_Handler();
+    // }
+    VL53L0X_Device.I2cDevAddr = 0x29;
     VL53L0X_Device.comms_type = 0;
     VL53L0X_Device.comms_speed_khz = 400;
+
+    HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_SET);
+    osDelay(100);
 
     if(Status == VL53L0X_ERROR_NONE)
     {
@@ -644,7 +646,6 @@ void StartDefaultTask(void *argument)
         print_pal_error("VL53L0X_StaticInit", Status);
     }
 
-    osDelay(100);
     VL53L0X_SetRangeFractionEnable(&VL53L0X_Device, 0); // Device Initialization
     
     if(Status == VL53L0X_ERROR_NONE)
@@ -654,8 +655,6 @@ void StartDefaultTask(void *argument)
         print_pal_error("VL53L0X_PerformRefCalibration", Status);
     }
 
-    osDelay(100);
-
     if(Status == VL53L0X_ERROR_NONE)
     {
         Status = VL53L0X_PerformRefSpadManagement(&VL53L0X_Device,
@@ -663,8 +662,6 @@ void StartDefaultTask(void *argument)
         //printf ("refSpadCount = %ld, isApertureSpads = %d\n", refSpadCount, isApertureSpads);
         print_pal_error("VL53L0X_PerformRefSpadManagement", Status);
     }
-
-    osDelay(100);
 
     if(Status == VL53L0X_ERROR_NONE)
     {
@@ -674,10 +671,9 @@ void StartDefaultTask(void *argument)
         print_pal_error("VL53L0X_SetDeviceMode", Status);
     }
 
-    // if (Status == VL53L0X_ERROR_NONE) {
-    //     Status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(&VL53L0X_Device, 30000);
-    // }	
-    osDelay(100);
+    if (Status == VL53L0X_ERROR_NONE) {
+        Status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(&VL53L0X_Device, 30000);
+    }	
 
     if(Status == VL53L0X_ERROR_NONE)
     {
@@ -691,45 +687,49 @@ void StartDefaultTask(void *argument)
 
     if(Status == VL53L0X_ERROR_NONE)
     {
+        uint32_t start = osKernelGetSysTimerCount();
+        uint32_t cpuClk = osKernelGetSysTimerFreq() / 1000000;
         while (1)
         {
+            uint32_t stop = osKernelGetSysTimerCount();
+            uint32_t elapsed = (stop - start) / cpuClk;
+            start = stop;
+            HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+
             Status = WaitMeasurementDataReady(&VL53L0X_Device);
             if(Status == VL53L0X_ERROR_NONE)
             {
                 Status = VL53L0X_GetRangingMeasurementData(&VL53L0X_Device,
                         &RangingMeasurementData);
             }
-            // VL53L0X_GetLimitCheckCurrent(&VL53L0X_Device,
-            // 		VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, &LimitCheckCurrent);
-            // osDelay(100);
+            VL53L0X_GetLimitCheckCurrent(&VL53L0X_Device,
+            		VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, &LimitCheckCurrent);
 
             int len;
-            // int len = snprintf(buffer, sizeof(buffer), "RANGE IGNORE THRESHOLD: %f\n\n", (float)LimitCheckCurrent/65536.0);
+            // len = snprintf(buffer, sizeof(buffer), "RANGE IGNORE THRESHOLD: %f\n\n", (float)LimitCheckCurrent/65536.0);
             // txstring(buffer, len);
             // osDelay(100);
 
             if (Status != VL53L0X_ERROR_NONE) break;
-            len = snprintf(buffer, sizeof(buffer), "RangeMilliMeter: %d mm / MaxRangeMilliMeter: %d mm / RangeStatus: %d / SignalRate: %d kcps / AmbientRate: %d kcps\r\n",
+            len = snprintf(buffer, sizeof(buffer), "RangeMilliMeter: %d mm / MaxRangeMilliMeter: %d mm / RangeStatus: %d / SignalRate: %d kcps / AmbientRate: %d kcps / Elapsed: %d us\r\n",
                      (int)RangingMeasurementData.RangeMilliMeter,
                      (int)RangingMeasurementData.RangeDMaxMilliMeter,
                      (int)RangingMeasurementData.RangeStatus,
                      (int)RangingMeasurementData.SignalRateRtnMegaCps,
-                     (int)RangingMeasurementData.AmbientRateRtnMegaCps);
-            //txstring(buffer, len);
-
-            osDelay(100);
+                     (int)RangingMeasurementData.AmbientRateRtnMegaCps,
+                    (int)elapsed);
+            txstring(buffer, len);
         }
     }
 #endif
-    CDC_EnableBuffering();
     while (1)
     {
-        osDelay(10);
+        osDelay(1000);
         HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-        snprintf(buffer, sizeof(buffer), "Heartbeat %ld\n", HAL_GetTick());
-        txstring(buffer, strlen(buffer));
-        const char * msg = "The quick brown fox jumps over the lazy dog.\n";
-        txstring(msg, strlen(msg));
+        // snprintf(buffer, sizeof(buffer), "Heartbeat %ld\n", HAL_GetTick());
+        // txstring(buffer, strlen(buffer));
+        // const char * msg = "The quick brown fox jumps over the lazy dog.\n";
+        // txstring(msg, strlen(msg));
       }
   /* USER CODE END 5 */
 }

@@ -20,10 +20,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
-#include <string.h>
 
 /* USER CODE BEGIN INCLUDE */
-
+#include <string.h>
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -344,6 +343,7 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   return result;
 }
 
+/* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
 /**
   * @brief  Queue a packet for transmission when the CDC interface is busy
   * @param  Buf: Buffer of data to be queued
@@ -399,9 +399,6 @@ void CDC_DisableBuffering(void)
 {
   CDC_BufferingEnabled = 0;
 }
-
-/* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
-
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**

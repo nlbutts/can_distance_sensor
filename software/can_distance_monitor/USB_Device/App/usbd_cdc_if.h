@@ -31,6 +31,12 @@
 #include "usbd_cdc.h"
 
 /* USER CODE BEGIN INCLUDE */
+/* Buffer structure for queued data */
+#define CDC_BUFFER_SIZE 2048
+typedef struct {
+  uint8_t data[CDC_BUFFER_SIZE];
+  uint16_t length;
+} CDC_Buffer_t;
 
 /* USER CODE END INCLUDE */
 
@@ -64,12 +70,6 @@
   * @brief Types.
   * @{
   */
-
-/* Buffer structure for queued data */
-typedef struct {
-  uint8_t data[CDC_BUFFER_SIZE];
-  uint16_t length;
-} CDC_Buffer_t;
 
 /* USER CODE BEGIN EXPORTED_TYPES */
 
@@ -115,10 +115,10 @@ extern uint8_t CDC_BufferingEnabled;
   */
 
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
-void CDC_EnableBuffering(void);
-void CDC_DisableBuffering(void);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
+void CDC_EnableBuffering(void);
+void CDC_DisableBuffering(void);
 
 /* USER CODE END EXPORTED_FUNCTIONS */
 
